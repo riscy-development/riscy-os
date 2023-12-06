@@ -1,3 +1,6 @@
+# Configuration
+.config
+
 # Created by https://www.toptal.com/developers/gitignore/api/c,c++,python,emacs,nvim,visualstudiocode,clion,linux,macos,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,python,emacs,nvim,visualstudiocode,clion,linux,macos,windows
 
@@ -259,7 +262,7 @@ flycheck_*.el
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
 
 # Thumbnails
 ._*

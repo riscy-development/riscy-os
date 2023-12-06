@@ -1,0 +1,16 @@
+mainmenu "RISCy OS Configuration"
+
+#source "arch/Kconfig"
+
+menu "Build Options"
+
+config ADDITIONAL_KERNEL_FLAGS
+  string "Additional flags to pass to GCC"
+  default "-O2"
+
+
+
+
+endmenu
+
+#config ARCHITECTURE
