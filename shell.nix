@@ -5,7 +5,7 @@ in
 
 pkgs.mkShell {
   packages = with pkgs; [
-    wget
+    wget figlet
 
     # GCC dependencies
     coreutils moreutils binutils

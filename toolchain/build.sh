@@ -7,6 +7,7 @@ set -euo pipefail
 #######################################################################################
 BINUTILS_VERSION="2.41"
 GCC_VERSION="13.2.0"
+GDB_VERSION="14.1"
 
 #######################################################################################
 ### Setup
@@ -15,12 +16,8 @@ GCC_VERSION="13.2.0"
 # Check arguments
 if [[ $# -eq 1 ]]; then
     ARCH=$1
-    CLEAN=false
-elif [[ $# -eq 2 ]]; then
-    ARCH=$1
-    CLEAN=true
 else
-    echo "Usage: build.sh <arch> [--clean]"
+    echo "Usage: $0 <arch>"
     exit 1
 fi
 
@@ -38,25 +35,13 @@ mkdir -p "$BIN"
 mkdir -p "$BUILD"
 
 # Get message binary
-MESSAGE="echo"
-if which figlet > /dev/null 2>&1; then
-    MESSAGE="figlet"
-fi
+MESSAGE="figlet"
 
 msg() {
     echo "--------------------------------------------------------------------------------"
     $MESSAGE $@
     echo "--------------------------------------------------------------------------------"
     echo
-}
-
-# Helpers
-should_clean() {
-    if [[ $CLEAN = true ]]; then
-        return 0;
-    else
-        return 1;
-    fi
 }
 
 #######################################################################################
@@ -77,12 +62,6 @@ download() {
 
     # Message
     echo "Downloading $name"
-
-    # Cleanup
-    if should_clean; then
-        echo "    Removing old tarball and source dir"
-        rm -rf "$tarball" "$src_dir"
-    fi
 
     # Download
     if ! [[ -f "$tarball" ]]; then
@@ -115,6 +94,15 @@ download binutils \
          $BINUTILS_SRC_DIR \
          "ftp://ftp.gnu.org/gnu/binutils/${BINUTILS_TARBALL}.xz"
 
+# GDB
+GDB_TARBALL="gdb-${GDB_VERSION}.tar"
+GDB_SRC_DIR="gdb-${GDB_VERSION}"
+
+download gcc \
+         $GDB_TARBALL \
+         $GDB_SRC_DIR \
+         "ftp://ftp.gnu.org/gnu/gdb/${GDB_TARBALL}.xz"
+
 # GCC
 GCC_TARBALL="gcc-${GCC_VERSION}.tar"
 GCC_SRC_DIR="gcc-${GCC_VERSION}"
@@ -140,10 +128,6 @@ echo "Installing to $PREFIX"
 # Enter build dir
 pushd "$BUILD" > /dev/null
 
-if should_clean; then
-    rm -rf binutils gcc "$BIN"
-fi
-
 # Build binutils
 msg "Building binutils"
 
@@ -160,6 +144,26 @@ pushd binutils
 
 do-make
 do-make install
+
+echo -e "DONE\n"
+popd
+
+# Build GDB
+msg "Building GDB"
+
+mkdir -p gdb
+pushd gdb
+
+"$SRC/$GDB_SRC_DIR/configure" \
+    --prefix="$PREFIX" \
+    --target="$TARGET" \
+    --with-sysroot \
+    --enable-shared \
+    --disable-nls \
+    --disable-werror || exit 1
+
+do-make all-gdb
+do-make install-gdb install-opcodes
 
 echo -e "DONE\n"
 popd
