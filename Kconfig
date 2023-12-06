@@ -1,16 +1,32 @@
-mainmenu "RISCy OS Configuration"
+#mainmenu "RISCy OS Configuration"
 
-#source "arch/Kconfig"
+source "arch/Kconfig"
+
 
 menu "Build Options"
 
+config OPTIMIZATION_LEVEL
+	int "Optimization level (-O)"
+	default 0
+	range 0 3
+	help
+          Can obviously improve performance. However, may expose bugs. Not
+	  recommended for general development (this isn't Nautilus).
+
+config DEBUG_SYMBOLS
+	bool "Generate debug symbols (-g)"
+	default y if OPTIMIZATION_LEVEL = 0
+	default n # otherwise
+	help
+          This can be useful when debugging with attached GDB in QEMU. Leads to
+          code bloat though. Enabled by default at "-O0", must be enabled manually
+          otherwise.
+
 config ADDITIONAL_KERNEL_FLAGS
-  string "Additional flags to pass to GCC"
-  default "-O2"
-
-
-
+	string "Additional flags to pass to GCC"
+	default ""
+	help
+          This simply gets tacked on to the end of CFLAGS.
 
 endmenu
 
-#config ARCHITECTURE

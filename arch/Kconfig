@@ -1,0 +1,72 @@
+# The root architecture configuration
+choice
+	prompt "Architecture"
+	default RISCV64
+
+	config RISCV32
+		bool "RISC-V (32-bit)"
+
+	config RISCV64
+		bool "RISC-V (64-bit)"
+
+	# config X86
+	# 	bool "x86"
+
+	# config X86_64
+	# 	bool "x86_64"
+
+	# config ARM64
+	# 	bool "ARM64"
+endchoice
+
+
+# menu "x86_64 Configuration"
+# 	depends on X86_64
+# 	source "arch/x86_64/Kconfig"
+# endmenu
+
+
+menu "RISC-V Configuration"
+	depends on RISCV32 || RISCV64
+	source "arch/riscv/Kconfig"
+endmenu
+
+
+# menu "ARM64 Configuration"
+# 	depends on ARM64
+# 	source "arch/arm64/Kconfig"
+# endmenu
+
+###############################################################################
+# Computed options
+###############################################################################
+config RISCV
+	bool
+	default y if RISCV32 || RISCV64
+	default n  # otherwise
+
+config KERNEL_VIRTUAL_BASE
+	hex
+	default 0xffff880000000000 if X86 || X86_64
+
+	# RISC-V
+	default 0x80000000 if SV32 && RISCV
+	default 0xffffffc000000000 if SV39 && RISCV
+	default 0xffff800000000000 if SV48 && RISCV
+
+	# ARM64
+	default 0xffffffff80000000 if ARM64
+
+config ARCH_NAME
+	string
+	default "riscv64" if RISCV
+	default "x86_64" if X86_64
+	default "i386" if X86
+	default "aarch64" if ARM64
+
+config ARCH_DIR
+	string
+	default "x86" if X86
+	default "x86_64" if X86_64
+	default "riscv" if RISCV
+	default "arm64" if ARM64
