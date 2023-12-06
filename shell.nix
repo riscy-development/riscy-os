@@ -9,6 +9,9 @@ pkgs.mkShell {
     wget figlet
     python312
 
+    # Kbuild deps
+    ncurses
+
     # GCC dependencies
     coreutils moreutils binutils
     bison flex
