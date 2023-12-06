@@ -7,6 +7,7 @@ pkgs.mkShell {
   packages = with pkgs; [
     # Script dependencies
     wget figlet
+    python312
 
     # GCC dependencies
     coreutils moreutils binutils
