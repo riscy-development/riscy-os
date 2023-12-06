@@ -7,7 +7,7 @@ pkgs.mkShell {
   packages = with pkgs; [
     # Script dependencies
     wget figlet
-    python312
+    python312 black
 
     # Kbuild deps
     ncurses
