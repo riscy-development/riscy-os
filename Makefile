@@ -1,10 +1,15 @@
-# TODO configurable by arch
-TOOLCHAIN := toolchain/local/bin/riscv64-elf-gcc toolchain/local/bin/riscv64-elf-gdb toolchain/local/bin/riscv64-elf-ld
+MAKEFLAGS := -j 1
+
+# include generated configuration
+-include include/config/auto.conf
+
 KBUILD := tools/local/bin/kbuild-mconf
+CONFIG := .config .config.cmake
+CONFIG_GEN := $(wildcard include/config/*) $(wildcard include/generated/*)
 
 
-.PHONY: all
-all: .config $(TOOLCHAIN)
+.PHONY: default
+default: kernel
 
 
 # Configuration
@@ -12,12 +17,34 @@ all: .config $(TOOLCHAIN)
 menuconfig: $(KBUILD)
 	@tools/local/bin/kbuild-mconf Kconfig
 
-.config: menuconfig Kconfig
+.config: menuconfig
 
+.config.cmake: .config
+	scripts/config_to_cmake.py .config .config.cmake
+
+# Build
+.PHONY: kernel
+kernel: $(CONFIG) toolchain
+	echo TODO
 
 # Build tools
 $(KBUILD):
-	@tools/build.sh
+	tools/build.sh
 
-$(TOOLCHAIN):
-	@toolchain/build.sh
+.PHONY: toolchain _toolchain
+toolchain: $(CONFIG)
+	$(MAKE) _toolchain
+
+_toolchain:
+	toolchain/build.sh $(CONFIG_ARCH_NAME)
+
+# Cleanup
+clean:
+	rm -f $(CONFIG) $(CONFIG_GEN)
+
+full-clean: clean
+	toolchain/clean.sh
+	tools/clean.sh
+
+# Deps
+-include include/config/auto.conf.cmd
