@@ -3,6 +3,7 @@ import sys
 
 if len(sys.argv) != 3:
     print(f"Usage: {sys.argv[0]} <infile> <outfile>")
+    sys.exit(1)
 
 with open(sys.argv[1]) as in_file, open(sys.argv[2], "w") as out_file:
     for line in in_file:
