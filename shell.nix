@@ -5,6 +5,7 @@ in
 
 pkgs.mkShell {
   packages = with pkgs; [
+    # Script dependencies
     wget figlet
 
     # GCC dependencies
@@ -12,6 +13,9 @@ pkgs.mkShell {
     bison flex
     gmp mpfr libmpc zlib
     texinfo gengetopt
+
+    # Testing dependencies
+    qemu
 
     # bash
     bashInteractive
