@@ -58,8 +58,6 @@ add_executable(riscy-os ${KERNEL_SOURCES})
 target_link_libraries(riscy-os libgcc)
 
 # Set include directories
-message("${KERNEL_SOURCES}")
-message("${KERNEL_INCLUDE_DIRS}")
 target_include_directories(riscy-os PUBLIC ${KERNEL_INCLUDE_DIRS})
 
 # Add defines
