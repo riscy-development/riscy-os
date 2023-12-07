@@ -1,8 +1,6 @@
 #ifndef __KERNEL_STDINT_H__
 #define __KERNEL_STDINT_H__
 
-#include "generated/autoconf.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

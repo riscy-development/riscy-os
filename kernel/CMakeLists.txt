@@ -14,8 +14,15 @@ add_custom_target(
 
 # ----- Flags -----
 
-set(CMAKE_C_FLAGS "${ARCH_KERN_C_FLAGS} ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${ARCH_KERN_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
+# Force include autoconf.h
+set(AUTOCONF_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/../include/generated/autoconf.h")
+
+set(KERN_C_FLAGS "-include ${AUTOCONF_HEADER}")
+set(KERN_CXX_FLAGS "-include ${AUTOCONF_HEADER}")
+
+# Set full command line
+set(CMAKE_C_FLAGS "${KERN_C_FLAGS} ${ARCH_KERN_C_FLAGS} ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${KERN_CXX_FLAGS} ${ARCH_KERN_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 # ----- Sources -----
 
@@ -34,7 +41,6 @@ list(
 
   # Main includes
   "${CMAKE_CURRENT_SOURCE_DIR}/../include"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include/generated"
 )
 
 # Add other directories
