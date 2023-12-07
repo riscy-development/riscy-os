@@ -15,9 +15,11 @@ default: kernel
 
 
 # Configuration
-.PHONY: menuconfig
+.PHONY: menuconfig cfg
 menuconfig: $(KBUILD)
 	@tools/local/bin/kbuild-mconf Kconfig
+
+cfg: menuconfig
 
 .config:
 	@echo "Please run \`make menuconfig\` first to configure the build"
@@ -27,12 +29,12 @@ menuconfig: $(KBUILD)
 	scripts/config_to_cmake.py .config .config.cmake
 
 # Build
-$(BUILD_SCRIPT): $(CONFIG) toolchain
+$(BUILD_SCRIPT): .config.cmake
 	mkdir -p $(BUILD)
 	cd $(BUILD); cmake -G Ninja ..
 
 .PHONY: kernel
-kernel: $(BUILD)/build.ninja
+kernel: | toolchain $(BUILD_SCRIPT)
 	ninja -C build install
 
 # Run
@@ -44,7 +46,7 @@ $(KBUILD):
 	tools/build.sh
 
 .PHONY: toolchain _toolchain
-toolchain: $(CONFIG)
+toolchain: .config.cmake
 	$(MAKE) _toolchain
 
 _toolchain:
