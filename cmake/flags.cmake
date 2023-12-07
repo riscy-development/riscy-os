@@ -16,6 +16,6 @@ set(CMAKE_CXX_FLAGS "${DEFAULT_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 # Add debug flags if needed
 if (CONFIG_DEBUG_SYMBOLS)
-  set(CMAKE_C_FLAGS "-g4 ${CMAKE_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "-g4 ${CMAKE_CXX_FLAGS}")
+  set(CMAKE_C_FLAGS "-g3 ${CMAKE_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "-g3 ${CMAKE_CXX_FLAGS}")
 endif()
