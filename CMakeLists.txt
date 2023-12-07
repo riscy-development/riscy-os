@@ -49,9 +49,6 @@ include("arch/${CONFIG_ARCH_DIR}/config.cmake")
 # Set up linker scripts
 include("cmake/lds.cmake")
 
-add_linker_script("kernel.ld" ${ARCH_KERN_LINKER_SCRIPT})
-set(KERN_LINKER_SCRIPT "${CMAKE_BINARY_DIR}/kernel.ld")
-
 # add_linker_script("user.ld" ${ARCH_USER_LINKER_SCRIPT})
 # set(USER_LINKER_SCRIPT "${CMAKE_BINARY_DIR}/kernel.ld")
 
