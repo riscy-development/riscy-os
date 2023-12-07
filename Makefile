@@ -7,6 +7,8 @@ KBUILD := tools/local/bin/kbuild-mconf
 CONFIG := .config .config.cmake
 CONFIG_GEN := $(wildcard include/config/*) $(wildcard include/generated/*)
 
+BUILD := build
+BUILD_SCRIPT := $(BUILD)/build.ninja
 
 .PHONY: default
 default: kernel
@@ -23,9 +25,13 @@ menuconfig: $(KBUILD)
 	scripts/config_to_cmake.py .config .config.cmake
 
 # Build
+$(BUILD_SCRIPT): $(CONFIG) toolchain
+	mkdir -p $(BUILD)
+	cd $(BUILD); cmake -G Ninja ..
+
 .PHONY: kernel
-kernel: $(CONFIG) toolchain
-	echo TODO
+kernel: $(BUILD)/build.ninja
+	ninja -C build install
 
 # Build tools
 $(KBUILD):
@@ -41,6 +47,7 @@ _toolchain:
 # Cleanup
 clean:
 	rm -f $(CONFIG) $(CONFIG_GEN)
+	rm -rf $(BUILD)
 
 full-clean: clean
 	toolchain/clean.sh
