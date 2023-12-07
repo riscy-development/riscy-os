@@ -33,6 +33,10 @@ $(BUILD_SCRIPT): $(CONFIG) toolchain
 kernel: $(BUILD)/build.ninja
 	ninja -C build install
 
+# Run
+run:
+	scripts/run.sh
+
 # Build tools
 $(KBUILD):
 	tools/build.sh
