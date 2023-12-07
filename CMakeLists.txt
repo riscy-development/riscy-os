@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.27)
 
 # Configuration
 include(cmake/prelude.cmake)
-
 include(.config.cmake)
-include(toolchain/setup.cmake)
+
+# Set up toolchain
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/toolchain/setup.cmake")
+include(toolchain/flags.cmake)
 
 # Create project
 project(
@@ -17,6 +19,8 @@ project(
 
 # ----- LANGUAGE CONFIGURATION -----
 
+message("CFLAGS: ${CMAKE_C_FLAGS}")
+message("CXXFLAGS: ${CMAKE_CXX_FLAGS}")
 # Safety
 include(cmake/flags.cmake)
 include(cmake/linters.cmake)
@@ -38,25 +42,59 @@ if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
   )
 endif()
 
-message("CFLAGS: ${CMAKE_C_FLAGS}")
-message("CXXFLAGS: ${CMAKE_CXX_FLAGS}")
 
 # ----- ARCHITECTURE CONFIGURATION -----
 
 # Grab arch-specific config
 include("arch/${CONFIG_ARCH_DIR}/config.cmake")
 
+# Set up linker scripts
+include("cmake/lds.cmake")
 
+add_linker_script("kernel.ld" ${ARCH_KERN_LINKER_SCRIPT})
+set(KERN_LINKER_SCRIPT "${CMAKE_BINARY_DIR}/kernel.ld")
 
+# add_linker_script("user.ld" ${ARCH_USER_LINKER_SCRIPT})
+# set(USER_LINKER_SCRIPT "${CMAKE_BINARY_DIR}/kernel.ld")
+
+# Set up installation
+set(CMAKE_STAGING_PREFIX "${CMAKE_SYSROOT}")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SYSROOT}")
+
+# Set output directories
+# This is for userspace bins
+set(
+  EXECUTABLE_OUTPUT_PATH
+  "${CMAKE_SYSROOT}/bin" CACHE PATH "Build directory" FORCE
+)
+set(
+  LIBRARY_OUTPUT_PATH
+  "${CMAKE_SYSROOT}/usr/lib" CACHE PATH "Build directory" FORCE
+)
+
+# ----- KERNEL -----
+
+# Set up libgcc
+add_library("libgcc" STATIC IMPORTED GLOBAL)
+set_property(
+  TARGET "libgcc"
+  PROPERTY IMPORTED_LOCATION
+  "${CMAKE_SOURCE_DIR}/toolchain/build/${CMAKE_SYSTEM_PROCESSOR}/gcc/gcc/libgcc.a"
+)
+
+# Add the kernel
+add_subdirectory(kernel)
+
+# ----- USERSPACE -----
 
 # TODO
-# Export needed flags
-# set(TOOLCHAIN_CFLAGS   "-ffreestanding -nostartfiles -nostdlib -nodefaultlibs -Wl,--gc-sections")
-# set(TOOLCHAIN_CXXFLAGS "-fno-rtti -fno-exceptions ${TOOLCHAIN_CFLAGS}")
-# set(TOOLCHAIN_LDFLAGS  "--gc-sections")
 
-# if (CONFIG_RISCV)
-#   set(TOOLCHAIN_CFLAGS   "-mcmodel=medany ${TOOLCHAIN_CFLAGS}")
-#   set(TOOLCHAIN_CXXFLAGS "-mcmodel=medany ${TOOLCHAIN_CXXFLAGS}")
-# endif()
+message(${CMAKE_SYSROOT})
+
+message("src: ${CMAKE_SOURCE_DIR}")
+message("bin: ${CMAKE_BINARY_DIR}")
+message("CFLAGS: ${CMAKE_C_FLAGS}")
+message("CXXFLAGS: ${CMAKE_CXX_FLAGS}")
+message("ASFLAGS: ${CMAKE_ASM_FLAGS}")
+message("LDFLAGS: ${LINK_OPTIONS}")
 

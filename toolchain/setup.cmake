@@ -3,6 +3,8 @@
 set(CMAKE_SYSTEM_NAME "Generic")
 set(CMAKE_CROSSCOMPILING ON)
 
+set(CMAKE_SYSROOT "${CMAKE_BINARY_DIR}/root")
+
 # Set processor type
 set(CMAKE_SYSTEM_PROCESSOR "${CONFIG_ARCH_NAME}")
 
@@ -30,7 +32,3 @@ set(CMAKE_AR            ${TOOLCHAIN_PREFIX}-ar)
 
 # Output ELF64 if using NASM
 set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
-
-# Set some basic compiler flags
-set(CMAKE_C_FLAGS "-ffreestanding -nostdlib -fdiagnostics-color=always ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-ffreestanding -nostdlib -nostdinc++ -fdiagnostics-color=always ${CMAKE_CXX_FLAGS}")
