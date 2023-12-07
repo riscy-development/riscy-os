@@ -1,8 +1,8 @@
 #ifndef __KERNEL_OF_FDT_H__
 #define __KERNEL_OF_FDT_H__
 
-#include<kernel/stdint.h>
-#include<kernel/string.h>
+#include <kernel/stdint.h>
+#include <kernel/string.h>
 
 #define FDT_COMPAT_VERSION 17
 
@@ -27,19 +27,20 @@ struct fdt_node {
     uint32_t magic;
     char unit_name[];
 };
+
 struct fdt_property {
     uint32_t len;
     uint32_t name_offset;
 };
 
 #define FDT_BEGIN_NODE 0x0
-#define FDT_END_NODE 0x2
-#define FDT_PROP 0x3
-#define FDT_NOP 0x4
-#define FDT_END 0x9
+#define FDT_END_NODE   0x2
+#define FDT_PROP       0x3
+#define FDT_NOP        0x4
+#define FDT_END        0x9
 
-int verify_fdt(struct fdt *fdt);
-size_t fdt_size(struct fdt *fdt);
+int verify_fdt(struct fdt* fdt);
+size_t fdt_size(struct fdt* fdt);
 
 #ifdef __cplusplus
 }
