@@ -1,9 +1,11 @@
+# ----- Shared flags for kernel and userspace -----
+
 set(
   DEFAULT_C_FLAGS
   "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion \
   -Wcast-qual -Wformat=2 -Wundef -Werror=float-equal -Wshadow -Wcast-align \
   -Wunused -Wnull-dereference -Wdouble-promotion -Wimplicit-fallthrough \
-  -Wextra-semi"
+  -Wextra-semi -Wstrict-overflow=5"
 )
 set(
   DEFAULT_CXX_FLAGS
