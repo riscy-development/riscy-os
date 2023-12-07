@@ -25,7 +25,7 @@ set(
 
   # Main script
   #kmain.cpp
-  string.cpp
+  string.c
 )
 
 # Get list of include directories
@@ -33,7 +33,7 @@ list(
   APPEND KERNEL_INCLUDE_DIRS
 
   # Main includes
-  "${CMAKE_CURRENT_SOURCE_DIR}/../include/kernel"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../include"
   "${CMAKE_CURRENT_SOURCE_DIR}/../include/generated"
 )
 
