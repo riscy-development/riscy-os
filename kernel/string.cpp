@@ -1,5 +1,10 @@
 
 #include<kernel/string.h>
+#include<kernel/stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void memcpy(uint8_t *src, uint8_t *dest, size_t n) {
   // Not ideal but functional
@@ -32,3 +37,6 @@ int strcmp(char *a, char *b)
   return 0;
 }
 
+#ifdef __cplusplus
+}
+#endif

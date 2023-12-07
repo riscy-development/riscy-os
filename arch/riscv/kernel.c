@@ -1,7 +1,5 @@
-#include <stdint.h>
-#include <stddef.h>
-
-
+#include<kernel/stdint.h>
+#include<kernel/string.h>
 
 unsigned char * uart = (unsigned char *)0x10000000; 
 void putchar(char c) {
