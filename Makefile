@@ -41,6 +41,9 @@ kernel: | toolchain $(BUILD_SCRIPT)
 run: kernel
 	scripts/run.sh
 
+format:
+	scripts/format.sh
+
 # Build tools
 $(KBUILD):
 	tools/build.sh

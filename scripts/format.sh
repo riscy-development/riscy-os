@@ -2,6 +2,7 @@
 
 set -euo pipefail
 shopt -s extglob
+shopt -s nullglob
 
 PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT="$( realpath "$PWD/.." )"
