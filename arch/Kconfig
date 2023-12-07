@@ -37,6 +37,18 @@ endmenu
 # 	source "arch/arm64/Kconfig"
 # endmenu
 
+choice
+	prompt "Endianness"
+	default VARIABLE_ENDIAN
+
+	config LITTLE_ENDIAN
+		bool "Little Endian"
+	config BIG_ENDIAN
+		bool "Big Endian"
+	config VARIABLE_ENDIAN
+		bool "Variable Endian"
+endchoice
+
 ###############################################################################
 # Computed options
 ###############################################################################

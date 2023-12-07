@@ -4,13 +4,16 @@ choice
 
 	config SV32
 		bool "Sv32 - 32-bit paging"
+		select VARIABLE_ENDIAN
 		depends on RISCV32
 
 	config SV39
 		bool "Sv39 - 39-bit paging"
+		select VARIABLE_ENDIAN
 		depends on RISCV64
 
 	config SV48
 		bool "Sv48 - 48-bit paging"
+		select VARIABLE_ENDIAN
 		depends on RISCV64
 endchoice

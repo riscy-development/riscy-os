@@ -7,6 +7,10 @@
 _start:
         .cfi_startproc
 
+        /* According to the Linux specification: */
+        /* a0 contains the hartid */
+	/* a1 contains a pointer to the fdt */
+
         /* Set up global pointer */
         .option push
         .option norelax

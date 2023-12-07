@@ -1,5 +1,6 @@
 #include<kernel/stdint.h>
 #include<kernel/string.h>
+#include<kernel/of/fdt.h>
 
 unsigned char * uart = (unsigned char *)0x10000000; 
 void putchar(char c) {
@@ -20,11 +21,13 @@ __attribute__ ((constructor)) void foo(void)
 	print("foo is running and print is available at this point\n");
 }
 
-void kmain(void) {
-	print("Hello world!\r\n");
+void kmain(uint64_t hartid, struct fdt *fdt) {
+	if(verify_fdt(fdt)) {
+		print("Supported FDT Version\n");
+	} else {
+		print("Cannot Read the FDT (Unsupported Version!)\n");
+	}
 	while(1) {
-		// Read input from the UART
-		putchar(*uart);
 	}
 	return;
 }
