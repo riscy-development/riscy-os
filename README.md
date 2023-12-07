@@ -7,6 +7,8 @@ A OS for RISC-V. Use at your own RISC.
 Make sure you have Nix installed. Then run the following
 
 ```sh
+$ git submodule update --init --recursive
+$ git submodule update --remote
 $ nix-shell
 $ make
 ```
