@@ -57,6 +57,11 @@ config RISCV
 	default y if RISCV32 || RISCV64
 	default n  # otherwise
 
+config 64_BIT
+	bool
+	default y if X86_64 || RISCV64 || ARM64
+	default n
+
 config KERNEL_VIRTUAL_BASE
 	hex
 	default 0xffff880000000000 if X86 || X86_64
