@@ -9,6 +9,9 @@ pkgs.mkShell {
     wget figlet
     python312 black
 
+    # Build deps
+    cmake
+
     # Kbuild deps
     ncurses
 
