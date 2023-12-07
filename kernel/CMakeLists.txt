@@ -12,6 +12,11 @@ add_custom_target(
   DEPENDS ${KERN_LINKER_SCRIPT}
 )
 
+# ----- Flags -----
+
+set(CMAKE_C_FLAGS "${ARCH_KERN_C_FLAGS} ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${ARCH_KERN_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
+
 # ----- Sources -----
 
 # Get list of sources
@@ -54,7 +59,7 @@ target_include_directories(riscy-os PUBLIC ${KERNEL_INCLUDE_DIRS})
 target_compile_definitions(riscy-os PUBLIC KERNEL) # -D KERNEL
 
 # Set up linking
-target_link_options(riscy-os PUBLIC "LINKER:-T ${KERN_LINKER_SCRIPT}")
+target_link_options(riscy-os PUBLIC "LINKER:-T${KERN_LINKER_SCRIPT}")
 
 # Set properties of target
 set_target_properties(
