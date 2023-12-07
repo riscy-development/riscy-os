@@ -19,8 +19,6 @@ project(
 
 # ----- LANGUAGE CONFIGURATION -----
 
-message("CFLAGS: ${CMAKE_C_FLAGS}")
-message("CXXFLAGS: ${CMAKE_CXX_FLAGS}")
 # Safety
 include(cmake/flags.cmake)
 include(cmake/linters.cmake)
@@ -88,13 +86,3 @@ add_subdirectory(kernel)
 # ----- USERSPACE -----
 
 # TODO
-
-message(${CMAKE_SYSROOT})
-
-message("src: ${CMAKE_SOURCE_DIR}")
-message("bin: ${CMAKE_BINARY_DIR}")
-message("CFLAGS: ${CMAKE_C_FLAGS}")
-message("CXXFLAGS: ${CMAKE_CXX_FLAGS}")
-message("ASFLAGS: ${CMAKE_ASM_FLAGS}")
-message("LDFLAGS: ${LINK_OPTIONS}")
-
