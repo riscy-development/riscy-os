@@ -40,7 +40,7 @@ _Static_assert(sizeof(uint32_t) == 4, "uint32_t is not 4 bytes long!");
 _Static_assert(sizeof(uint64_t) == 8, "uint64_t is not 8 bytes long!");
 
 _Static_assert(sizeof(size_t) == sizeof(sizeof(int)), "size_t not set correctly!");
-_Static_assert(sizeof(ssize_t) == sizeof(sizeof(int)), "size_t not set correctly!");
+_Static_assert(sizeof(ssize_t) == sizeof(sizeof(int)), "ssize_t not set correctly!");
 /* NOLINTEND */
 
 #ifdef __cplusplus
