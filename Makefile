@@ -38,11 +38,16 @@ kernel: | toolchain $(BUILD_SCRIPT)
 	ninja -C build install
 
 # Run
+.PHONY: run format cloc
+
 run: kernel
 	scripts/run.sh
 
 format:
 	scripts/format.sh
+
+cloc:
+	@scc --exclude-dir 'toolchain/' --exclude-dir 'tools/'
 
 # Build tools
 $(KBUILD):
