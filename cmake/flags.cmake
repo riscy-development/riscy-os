@@ -5,11 +5,11 @@ set(
   "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion \
   -Wcast-qual -Wformat=2 -Wundef -Werror=float-equal -Wshadow -Wcast-align \
   -Wunused -Wnull-dereference -Wdouble-promotion -Wimplicit-fallthrough \
-  -Wextra-semi -Wstrict-overflow=5"
+  -Wstrict-overflow=5"
 )
 set(
   DEFAULT_CXX_FLAGS
-  "${DEFAULT_C_FLAGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wold-style-cast"
+  "${DEFAULT_C_FLAGS} -Woverloaded-virtual -Wnon-virtual-dtor -Wold-style-cast -Wextra-semi"
 )
 
 # Set the flags
