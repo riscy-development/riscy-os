@@ -19,7 +19,9 @@ default: kernel
 menuconfig: $(KBUILD)
 	@tools/local/bin/kbuild-mconf Kconfig
 
-.config: menuconfig
+.config:
+	@echo "Please run \`make menuconfig\` first to configure the build"
+	@exit 1
 
 .config.cmake: .config
 	scripts/config_to_cmake.py .config .config.cmake
