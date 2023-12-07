@@ -2,15 +2,18 @@
 if (CONFIG_RISCV64)
   set(RISCV_MARCH "rv64gc")
   set(RISCV_MABI  "lp64d")
+  set(RISCV_EMODE "elf64lriscv") # linker emulation mode
 else() # riscv32
   set(RISCV_MARCH "rv32gc")
   set(RISCV_MABI  "ilp32d")
+  set(RISCV_EMODE "elf32lriscv") # linker emulation mode
 endif()
 
 # Universal
-add_link_options(
-  LINKER:-m elf_${CONFIG_ARCH_NAME} -z max-page-size=0x1000 -nostdlib
-)
+add_link_options(LINKER:-m${RISCV_EMODE})
+add_link_options(LINKER:-zmax-page-size=0x1000)
+add_link_options(LINKER:-nostdlib)
+
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mno-relax")
 
 # Kernelspace
