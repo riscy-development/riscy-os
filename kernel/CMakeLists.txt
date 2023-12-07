@@ -25,6 +25,7 @@ set(
 
   # Main script
   #kmain.cpp
+  string.cpp
 )
 
 # Get list of include directories
