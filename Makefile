@@ -34,7 +34,7 @@ kernel: $(BUILD)/build.ninja
 	ninja -C build install
 
 # Run
-run:
+run: kernel
 	scripts/run.sh
 
 # Build tools
