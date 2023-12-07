@@ -14,7 +14,7 @@ add_custom_target(
 
 # ----- Flags -----
 
-set(CMAKE_C_FLAGS "${ARCH_KERN_C_FLAGS} ${CMAKE_C_FLAGS} -nostdinc")
+set(CMAKE_C_FLAGS "${ARCH_KERN_C_FLAGS} ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${ARCH_KERN_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 # ----- Sources -----
