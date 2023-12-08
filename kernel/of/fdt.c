@@ -2,14 +2,14 @@
 #include <kernel/endian.h>
 #include <kernel/of/fdt.h>
 
-static int
-fdt_struct_ptr_check(struct fdt* fdt, void* ptr) {
+static bool
+fdt_struct_ptr_invalid(struct fdt* fdt, void* ptr) {
     void* start = ((void*)fdt) + be32toh(fdt->off_dt_struct);
     void* end = start + be32toh(fdt->size_dt_struct);
     if (ptr < start || ptr >= end) {
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 static uint32_t*
@@ -35,6 +35,7 @@ fdt_next_token(struct fdt* fdt, uint32_t* token) {
             node = (struct fdt_node*)token;
             token++;
             str_len = (size_t)strlen(node->unit_name) + 1;
+            // (Comment for Nino) Align to 4 bytes
             cell_len = (str_len >> 2) + ((str_len & 3) != 0);
             token += cell_len;
             break;
@@ -42,7 +43,9 @@ fdt_next_token(struct fdt* fdt, uint32_t* token) {
             prop = (struct fdt_prop*)token;
             token++;
             str_len = fdt_prop_val_len(prop);
+            // (Comment for Nino) Align to 4 bytes
             cell_len = (str_len >> 2) + ((str_len & 3) != 0);
+            // (Comment for Nino) extra 2 is for "len" and "name_offset" fields
             token += (2ull + cell_len);
             break;
         case FDT_END:
@@ -51,7 +54,7 @@ fdt_next_token(struct fdt* fdt, uint32_t* token) {
             break;
     }
 
-    if (fdt_struct_ptr_check(fdt, (void*)token)) {
+    if (fdt_struct_ptr_invalid(fdt, (void*)token)) {
         return NULL;
     }
     return token;
@@ -90,15 +93,15 @@ fdt_next_token_after_node(struct fdt* fdt, struct fdt_node* node) {
     return token_ptr;
 }
 
-int
+enum fdt_error
 fdt_verify(struct fdt* fdt) {
-    if (be32toh(fdt->magic) != 0xd00dfeed) {
-        return 1;
+    if (be32toh(fdt->magic) != FDT_HEADER_MAGIC) {
+        return FDT_BAD_MAGIC;
     }
     if (be32toh(fdt->last_comp_version) > FDT_COMPAT_VERSION) {
-        return 1;
+        return FDT_INCOMPATIBLE;
     }
-    return 0;
+    return FDT_VALID;
 }
 
 size_t
@@ -294,7 +297,7 @@ fdt_get_prop_by_name(
     return NULL;
 }
 
-int
+bool
 fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compat) {
     struct fdt_prop* prop = fdt_get_prop_by_name(fdt, node, NULL, "compatible");
 
@@ -310,14 +313,14 @@ fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compa
         const char* curr_string = strings;
 
         if (strcmp(curr_string, compat) == 0) {
-            return 1;
+            return true;
         }
 
         strings += curr_len;
         strings_len -= curr_len;
     }
 
-    return 0;
+    return false;
 }
 
 struct fdt_node*

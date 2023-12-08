@@ -1,14 +1,14 @@
 #ifndef __KERNEL_OF_FDT_H__
 #define __KERNEL_OF_FDT_H__
 
-#include <kernel/stdint.h>
-#include <kernel/string.h>
-
-#define FDT_COMPAT_VERSION 17
+#include <stdint.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define FDT_COMPAT_VERSION 17
 
 struct fdt {
     uint32_t magic;
@@ -35,6 +35,8 @@ struct fdt_prop {
     uint8_t val[];
 };
 
+#define FDT_HEADER_MAGIC 0xd00dfeed
+
 #define FDT_BEGIN_NODE 0x1
 #define FDT_END_NODE 0x2
 #define FDT_PROP 0x3
@@ -45,12 +47,18 @@ struct fdt_prop {
  *  CORE FUNCTIONALITY
  * -------------------- */
 
+enum fdt_error 
+{
+  FDT_VALID,
+  
+  FDT_BAD_MAGIC,
+  FDT_INCOMPATIBLE,
+};
+
 /*
  * Make sure that this FDT is both Valid, and a version which we are equipped to parse
- * 0 -> Valid, else Invalid
- * (FDT_COMPAT_VERSION is the version of the FDT we are targeting)
  */
-int fdt_verify(struct fdt *fdt);
+enum fdt_error fdt_verify(struct fdt *fdt);
 
 /*
  * Get the size of this FDT in bytes
@@ -137,9 +145,9 @@ struct fdt_prop * fdt_get_prop_by_name(struct fdt *fdt, struct fdt_node *node, s
 struct fdt_node * fdt_find_compatible_node(struct fdt *fdt, struct fdt_node *start, const char *compat);
 
 /*
- * Returns 1 if "node" is compatible with "compat", else 0
+ * Returns true if "node" is compatible with "compat", else false
  */
-int fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat); 
+bool fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat); 
 
 #ifdef __cplusplus
 }

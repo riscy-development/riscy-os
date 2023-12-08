@@ -5,7 +5,7 @@ set(
   "-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion \
   -Wcast-qual -Wformat=2 -Wundef -Werror=float-equal -Wshadow -Wcast-align \
   -Wunused -Wnull-dereference -Wdouble-promotion -Wimplicit-fallthrough \
-  -Wstrict-overflow=5"
+  -Wstrict-overflow=5 -Wbuiltin-declaration-mismatch"
 )
 set(
   DEFAULT_CXX_FLAGS

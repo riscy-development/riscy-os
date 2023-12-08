@@ -1,7 +1,7 @@
 #ifndef __KERNEL_ENDIAN_H__
 #define __KERNEL_ENDIAN_H__
 
-#include <kernel/stdint.h>
+#include <stdint.h>
 
 /**
  * Is the system little endian?
