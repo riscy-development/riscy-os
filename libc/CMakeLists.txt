@@ -1,10 +1,14 @@
 # ----- Sources -----
-list(
-  APPEND LIBC_SOURCES
-  # Strings
-  string.c
-)
 
+# Set up sources and private includes
+list(APPEND LIBC_SOURCES)
+list(APPEND LIBC_PRIVATE_INCLUDES)
+
+# Add submodules
+include(cmake/modules.cmake)
+add_subdirectory(src)
+
+# Set up includes
 list(
   APPEND LIBC_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
@@ -24,6 +28,9 @@ add_library(riscy-libk STATIC ${LIBC_SOURCES})
 # Set include paths
 target_include_directories(riscy-libc PUBLIC ${LIBC_INCLUDES})
 target_include_directories(riscy-libk PUBLIC ${LIBK_INCLUDES})
+
+target_include_directories(riscy-libc PRIVATE ${LIBC_PRIVATE_INCLUDES})
+target_include_directories(riscy-libk PRIVATE ${LIBC_PRIVATE_INCLUDES})
 
 # Link to libgcc
 target_link_libraries(riscy-libc libgcc)
