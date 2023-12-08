@@ -6,8 +6,12 @@ extern "C" {
 #endif
 
 #ifdef __GNUC__
-/* We use the GCC stdarg as it is compiler-specific. */
-#    include_next <stdarg.h> /* NOLINT */
+
+typedef __builtin_va_list va_list;
+#define va_start __builtin_va_start
+#define va_end __builtin_va_end
+#define va_arg __builtin_va_arg
+
 #else
 #    error Only compatible with GCC right now.
 #endif
