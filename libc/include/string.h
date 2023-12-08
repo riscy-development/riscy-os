@@ -26,7 +26,33 @@ char* strndup(const char* src, size_t size);
 /*****************************************************************************
  *                           STRING EXAMINATION                              *
  *****************************************************************************/
+
+/**
+ * Get the length of the given null-terminated string.
+ *
+ * This DOES NOT include the null terminator.
+ *
+ * The behavior is undefined if `str` is not a pointer
+ * to a null-terminated byte string.
+ *
+ * @param str A null-terminated byte-string.
+ *
+ * @returns The length of `str`.
+ */
 size_t strlen(const char* str);
+
+/**
+ * Compare two null-terminated byte strings lexicographically.
+ *
+ * Characters interpreted as `unsigned char`.
+ *
+ * Undefined behavior if either string is not null-terminated.
+ *
+ * @param lhs The first string to compare.
+ * @param rhs The second string to compare.
+ *
+ * @returns -1 if lhs comes before rhs, 1 if rhs comes before lhs, and 0 if equal.
+ */
 int strcmp(const char* lhs, const char* rhs);
 
 #if 0 /* NOLINT: TODO */
