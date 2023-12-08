@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#warning stdint.h is incomplete, please be wary when including.
+#warning stdint.h is incomplete, please be wary when using.
 
 typedef char int8_t;
 typedef short int16_t;

@@ -24,16 +24,16 @@ extern "C" {
  *
  * NULL is just 0 (as always)
  *
- * nullptr_t is apparently typeof(nullptr), but typeof is a GCC extension
- * So I guess nullptr_t only works on GCC.
+ * nullptr_t is apparently typeof(nullptr), but typeof is an extension
+ * GCC already defines nullptr_t for us
+ * So support on other platforms is best effort (i.e. have you defined typeof?).
  */
 #undef NULL
 #define NULL 0
 
-#if defined(__GNUC__) && defined(__STDC_VERSION__)
+#if defined(__STDC_VERSION__) && !defined(__GNUC__)
+/* GCC already defines nullptr_t */
 typedef typeof(nullptr) nullptr_t;
-#else
-#    warning nullptr_t only available when using GCC.
 #endif
 
 /**
