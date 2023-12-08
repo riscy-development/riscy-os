@@ -35,8 +35,8 @@ target_compile_definitions(riscy-libk PRIVATE KERNEL) # -D KERNEL
 # Force include autoconf.h
 set(AUTOCONF_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/../include/generated/autoconf.h")
 
-set(CMAKE_C_FLAGS "-include ${AUTOCONF_HEADER}")
-set(CMAKE_CXX_FLAGS "-include ${AUTOCONF_HEADER}")
+set(CMAKE_C_FLAGS "-include ${AUTOCONF_HEADER} ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-include ${AUTOCONF_HEADER} ${CMAKE_CXX_FLAGS}")
 
 # Build libk with kernel flags
 separate_arguments(ARCH_LIBK_C_FLAGS UNIX_COMMAND ${ARCH_KERN_C_FLAGS})
