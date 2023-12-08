@@ -1,0 +1,27 @@
+# Kernel
+arch/           @egelja @kjhayes
+include/        @egelja @kjhayes
+kernel/         @egelja @kjhayes
+
+# Documentation
+docs/           @egelja
+*.md            @egelja
+LICENSE         @egelja
+
+# libc
+lib/            @echavemann
+
+# Build system
+cmake/          @egelja
+scripts/        @egelja
+toolchain/      @egelja
+tools/          @egelja
+CMakeLists.txt  @egelja
+KConfig         @egelja
+Makefile        @egelja
+shell.nix       @egelja
+
+# Other
+.clang*         @egelja
+.gitignore      @egelja
+.gitmodules     @egelja
