@@ -72,6 +72,22 @@ char* strtok(char* restrict str, const char* restrict delim);
  *****************************************************************************/
 
 /**
+ * Compare the first `count` bytes of `lhs` and `rhs` lexicographically.
+ *
+ * Both arrays are interpreted as having elements of `uint8_t`.
+ *
+ * Behavior undefined if access occurs beyond the end of either array.
+ * Behavior undefined if either array is a NULL pointer.
+ *
+ * @param lhs The first array to compare.
+ * @param rhs The second array to compare.
+ * @param count How many bytes to compare.
+ *
+ * @returns -1 if lhs comes first, 1 if rhs comes first, and 0 if they are equal.
+ */
+int memcmp(const void* lhs, const void* rhs, size_t count);
+
+/**
  * Copy `count` bytes from `src` to `dest`.
  *
  * Behavior is undefined when:
@@ -124,7 +140,7 @@ void* memset(void* dest, int ch, size_t count);
  *
  * Same as `memset`, but the compiler isn't allowed to optimize it out.
  *
- * Behavior undefined if access occurs beyond the end of the `dest array.
+ * Behavior undefined if access occurs beyond the end of the `dest` array.
  * Behavior undefined if `dest` is a NULL pointer.
  *
  * @param dest The destination array.
@@ -134,8 +150,6 @@ void* memset(void* dest, int ch, size_t count);
  * @returns The destination array (`dest`).
  */
 void* memset_explicit(void* dest, int ch, size_t count);
-
-int memcmp(const void* lhs, const void* rhs, size_t count);
 
 #if 0 /* NOLINT: TODO */
 void* memchr(const void* ptr, int ch, size_t count);

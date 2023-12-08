@@ -7,6 +7,7 @@ list(
   strcmp.c
 
   # Character array manipulation
+  memcmp.c
   memcpy.c
   memmove.c
   memset.c
