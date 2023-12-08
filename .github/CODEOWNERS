@@ -12,6 +12,7 @@ LICENSE			@egelja
 libc/			@echavemann
 
 # Build system
+.github/		@egelja
 cmake/			@egelja
 scripts/		@egelja
 toolchain/		@egelja
