@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-AccessModifierOffset: -3
+AccessModifierOffset: -4
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Left
 AlignConsecutiveAssignments: None
@@ -19,16 +19,15 @@ AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: TopLevelDefinitions
+AlwaysBreakAfterReturnType: AllDefinitions
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros:
   - __capability
 BasedOnStyle: "LLVM"
-BinPackArguments: true
-BinPackParameters: true
+BinPackArguments: false
+BinPackParameters: false
 BitFieldColonSpacing: Both
-# BraceWrapping is ignored as BreakBeforeBraces != Custom
 BraceWrapping:
   AfterCaseLabel: false
   AfterClass: false
@@ -41,23 +40,23 @@ BraceWrapping:
   AfterUnion: false
   AfterExternBlock: false
   BeforeCatch: false
-  BeforeElse: false
+  BeforeElse: true
   BeforeLambdaBody: false
   BeforeWhile: false
   IndentBraces: false
-  SplitEmptyFunction: true
+  SplitEmptyFunction: false
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
 BreakAfterJavaFieldAnnotations: true
 BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Custom
 BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 ColumnLimit: 88
-CommentPragmas: "^ IWYU pragma:"
+CommentPragmas: "^( IWYU pragma:| NOLINT)"
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
@@ -77,25 +76,25 @@ IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Regroup
 IncludeCategories:
+  # Headers in "" with extension.
+  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
+    Priority: 1
+    CaseSensitive: false
+  # Headers in <> from libraries.
+  - Regex: "^(<(gsl|catch2))"
+    Priority: 2
+    CaseSensitive: false
+  # C headers
+  - Regex: '<c([A-Za-z0-9\Q/-_\E])+>'
+    Priority: 4
+    CaseSensitive: false
   # Headers in <> without extension.
   - Regex: '<([A-Za-z0-9\Q/-_\E])+>'
     Priority: 5
     CaseSensitive: false
-  # OpenGL headers
-  - Regex: "^(<(gl|glfw|glm)\/)"
-    Priority: 3
-    CaseSensitive: false
-  # Headers in <> from vendored libraries.
-  - Regex: "^(<(json|catch2|argh))"
-    Priority: 2
-    CaseSensitive: false
   # Headers in <> with extension.
   - Regex: '<([A-Za-z0-9.\Q/-_\E])+>'
-    Priority: 4
-    CaseSensitive: false
-  # Headers in "" with extension.
-  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
-    Priority: 1
+    Priority: 3
     CaseSensitive: false
 IncludeIsMainRegex: "(Test)?$"
 IncludeIsMainSourceRegex: ""
@@ -114,7 +113,7 @@ MacroBlockBegin: ""
 MacroBlockEnd: ""
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
-PackConstructorInitializers: BinPack
+PackConstructorInitializers: NextLine
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
@@ -126,7 +125,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyIndentedWhitespace: 0
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
-PPIndentWidth: -1
+PPIndentWidth: 2
 QualifierAlignment: Leave
 ReferenceAlignment: Pointer
 ReflowComments: true
@@ -174,6 +173,9 @@ StatementAttributeLikeMacros:
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
+  - wxBEGIN_EVENT_TABLE
+  - wxEND_EVENT_TABLE
+  - EVT_MENU
 TabWidth: 4
 UseCRLF: false
 UseTab: Never
@@ -184,4 +186,3 @@ WhitespaceSensitiveMacros:
   - NS_SWIFT_NAME
   - CF_SWIFT_NAME
 ---
-

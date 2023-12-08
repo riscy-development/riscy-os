@@ -1,24 +1,18 @@
 include(CMakeParseArguments)
 
-
-macro(add_kernel_module)
+macro(add_libc_module)
   cmake_parse_arguments(
     TARGET                 # prefix of output variables
-    "CORE;LOADED"          # Boolean arguments
+    ""                     # boolean arguments
     "NAME"                 # Single value arguments
     "SOURCES;INCLUDE_DIRS" # multi value arguments
 
     ${ARGN}   # arguments of the function to parse, here we take the all original ones
   )
-  # TODO: Implement module loading
-  if (TARGET_LOADED)
-    message(FATAL_ERROR "Loading modules is not supported yet")
-    return()
-  endif()
 
   # Make sure a name was provided
   if(NOT TARGET_NAME)
-    message(FATAL_ERROR "You must provide a name for this kernel module.")
+    message(FATAL_ERROR "You must provide a name for this libc module.")
     return()
   endif()
 
@@ -34,20 +28,19 @@ macro(add_kernel_module)
 
   # Log
   list(LENGTH TARGET_SOURCES _num_sources)
-  message(STATUS "Added kernel module ${TARGET_NAME} with ${_num_sources} sources")
+  message(STATUS "Added libc module ${TARGET_NAME} with ${_num_sources} sources")
 
-  # Append to kernel sources
-  # TODO module loading
+  # Append to lib{c,k} sources
   list(
     APPEND NEW_SOURCES
-    ${KERNEL_SOURCES} ${TARGET_SOURCES}
+    ${LIBC_SOURCES} ${TARGET_SOURCES}
   )
-  set(KERNEL_SOURCES ${NEW_SOURCES} PARENT_SCOPE)
+  set(LIBC_SOURCES ${NEW_SOURCES} PARENT_SCOPE)
 
   # Set include directories
   list(
     APPEND NEW_INCLUDES
-    ${KERNEL_INCLUDE_DIRS} ${TARGET_INCLUDE_DIRS}
+    ${LIBC_PRIVATE_INCLUDES} ${TARGET_INCLUDE_DIRS}
   )
-  set(KERNEL_INCLUDE_DIRS ${NEW_INCLUDES} PARENT_SCOPE)
+  set(LIBC_PRIVATE_INCLUDES ${NEW_INCLUDES} PARENT_SCOPE)
 endmacro()
