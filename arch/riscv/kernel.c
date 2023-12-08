@@ -76,10 +76,9 @@ fdt_dump(struct fdt* fdt) {
     printk("FDT {\n");
     while (node != NULL && depth > 0) {
         for (int i = 0; i < depth; i++) {
-            printk("%c", '\t');
+            printk("\t");
         }
-        printk(fdt_node_name(node));
-        printk("%c", '\n');
+        printk("%s\n",fdt_node_name(node));
 
         struct fdt_node* subnode = fdt_node_subnode_begin(fdt, node);
         if (subnode) {
@@ -106,9 +105,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
     register_early_putchar(dead_simple_uart_putchar);
     
     // Print core ID
-    printk("Running on hart ");
-    printk("%c", (char)hartid + '0');
-    printk("%c", '\n');
+    printk("Running on hart (%c)\n", (char)hartid + '0');
 
     // Check the FDT
     if (fdt_verify(fdt) != FDT_VALID) {
@@ -123,9 +120,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
     if(clint == NULL) {
       printk("Could not find the CLINT!\n");
     } else {
-      printk("Found the CLINT!\n");
-      printk(fdt_node_name(clint));
-      printk("%c", '\n');
+      printk("Found the CLINT! (%s)\n", fdt_node_name(clint));
     }
 
     // Call global ctors

@@ -8,6 +8,7 @@
  *
  * %% - [DONE]
  * %c - [DONE]
+ * %s
  *
  * TODO:
  * %d
@@ -18,7 +19,6 @@
  * %g
  * %G
  * %o
- * %s
  * %u
  * %x
  * %X
@@ -53,6 +53,10 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
         buf_head = 0;
       }
 
+      // Predefinitions for use in the switch statement
+      char *s;
+      //
+
       switch(*fmt) {
         case '\0':
           // In this case we need to output the final %
@@ -61,12 +65,20 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           buf[1] = '\0';
           (*puts)(buf);
           num_chars += 1;
+          escaped = false;
           break;
         case 'c':
           buf[0] = (char)va_arg(args, int);
           buf[1] = '\0';
           (*puts)(buf);
           num_chars += 1;
+          escaped = false;
+          break;
+        case 's':
+          s = (char*)va_arg(args,char*);
+          (*puts)(s);
+          num_chars += strlen(s);
+          escaped = false;
           break;
         default:
           buf[0] = '%';
@@ -74,11 +86,12 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           buf[2] = '\0';
           num_chars += 2;
           (*puts)(buf);
+          escaped = false;
           break;
       }
     }
 
-    if(!escaped && *fmt != '\0') {
+    else if(!escaped && *fmt != '\0') {
       if(*fmt == '%') {
         escaped = true;
       } else {
