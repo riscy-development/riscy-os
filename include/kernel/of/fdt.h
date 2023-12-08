@@ -1,8 +1,8 @@
 #ifndef __KERNEL_OF_FDT_H__
 #define __KERNEL_OF_FDT_H__
 
-#include<kernel/stdint.h>
-#include<kernel/string.h>
+#include <kernel/stdint.h>
+#include <kernel/string.h>
 
 #define FDT_COMPAT_VERSION 17
 
@@ -24,12 +24,12 @@ struct fdt {
 };
 
 struct fdt_node {
-    uint32_t magic;
+    uint32_t token;
     char unit_name[];
 };
 
 struct fdt_prop {
-    uint32_t magic;
+    uint32_t token;
     uint32_t len;
     uint32_t name_offset;
     uint8_t val[];

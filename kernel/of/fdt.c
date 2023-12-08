@@ -101,9 +101,9 @@ int fdt_verify(struct fdt *fdt)
   return 0;
 }
 
-size_t fdt_size(struct fdt *fdt) 
-{
-  return (size_t)be32toh(fdt->totalsize);
+size_t
+fdt_size(struct fdt* fdt) {
+    return (size_t)be32toh(fdt->totalsize);
 }
 
 size_t fdt_prop_val_len(struct fdt_prop *prop) 

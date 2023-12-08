@@ -34,6 +34,7 @@ Checks: "\
   -hicpp-uppercase-literal-suffix,\
   -misc-use-anonymous-namespace,\
   -bugprone-easily-swappable-parameters,\
+  -readability-identifier-length,\
   -*-reinterpret-cast,\
   -cppcoreguidelines-avoid-const-or-ref-data-members"
 WarningsAsErrors: false
@@ -131,5 +132,5 @@ CheckOptions:
   readability-identifier-naming.ValueTemplateParameterCase: "CamelCase"
   readability-identifier-naming.VariableCase: "lower_case"
   readability-identifier-naming.VirtualMethodCase: "lower_case"
-  readability-identifier-length.IgnoredVariableNames: "^(ok|c)$"
+  readability-identifier-length.IgnoredVariableNames: "^(ok|a|b|c|x)$"
 ---

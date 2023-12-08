@@ -22,7 +22,7 @@ pkgs.mkShell {
     texinfo gengetopt
 
     # Testing dependencies
-    qemu
+    qemu scc
 
     # bash
     bashInteractive
