@@ -26,3 +26,4 @@ shell.nix		@egelja
 .clang*			@egelja
 .gitignore		@egelja
 .gitmodules		@egelja
+.git-blame-ignore-revs	@egelja
