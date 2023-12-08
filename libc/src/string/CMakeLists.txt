@@ -1,7 +1,13 @@
 list(
   APPEND STRING_SOURCES
-  # TODO multiple files
-  string.c
+  # String manipulation
+
+  # String examination
+  strlen.c
+  strcmp.c
+
+  # Character array manipulation
+  memcpy.c
 )
 
 list(

@@ -74,7 +74,9 @@ void* memccpy(void* restrict dest, const void* restrict src, int c, size_t count
 /*****************************************************************************
  *                              MISCELLANEOUS                                *
  *****************************************************************************/
+#if 0 /* NOLINT: TODO */
 char* strerror(int errnum); /* WHY ISN'T THIS CONST??? */
+#endif
 
 #ifdef __cplusplus
 }
