@@ -14,10 +14,12 @@ list(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
+message("${ARCH_LIBK_INCLUDES}")
 list(
   APPEND LIBK_INCLUDES
   ${LIBC_INCLUDES}
   "${CMAKE_CURRENT_SOURCE_DIR}/../include" # kernel includes
+  "${ARCH_LIBK_INCLUDES}"                  # arch-specific includes
 )
 
 # ----- Targets -----

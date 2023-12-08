@@ -1,4 +1,5 @@
 # Add modules
+add_subdirectory(stdlib)
 add_subdirectory(string)
 
 # Propagate upwards

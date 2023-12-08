@@ -16,13 +16,29 @@ add_link_options(LINKER:-nostdlib)
 
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mno-relax")
 
+#
 # Kernelspace
+#
+
+# Flags
 set(
   ARCH_KERN_C_FLAGS
   "-mno-relax -march=${RISCV_MARCH} -mabi=${RISCV_MABI} -mcmodel=medany \
    -fno-stack-protector -fno-omit-frame-pointer"
 )
 set(ARCH_KERN_CXX_FLAGS "${ARCH_KERN_C_FLAGS}")
+
+# Includes
+list(
+  APPEND ARCH_KERN_INCLUDES
+  include
+)
+
+set(ARCH_LIBK_INCLUDES ${ARCH_KERN_INCLUDES})
+list(
+  TRANSFORM ARCH_LIBK_INCLUDES
+  PREPEND "${CMAKE_CURRENT_LIST_DIR}/"  # since this file is included
+)
 
 # Userspace
 # TODO add a userspace
