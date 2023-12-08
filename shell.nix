@@ -10,7 +10,7 @@ pkgs.mkShell {
     python312 black
 
     # Build deps
-    cmake
+    cmake codespell
 
     # Kbuild deps
     ncurses

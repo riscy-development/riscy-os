@@ -3,7 +3,8 @@
 #include <kernel/of/fdt.h>
 
 static bool
-fdt_struct_ptr_invalid(struct fdt* fdt, void* ptr) {
+fdt_struct_ptr_invalid(struct fdt* fdt, void* ptr)
+{
     void* start = ((void*)fdt) + be32toh(fdt->off_dt_struct);
     void* end = start + be32toh(fdt->size_dt_struct);
     if (ptr < start || ptr >= end) {
@@ -13,12 +14,14 @@ fdt_struct_ptr_invalid(struct fdt* fdt, void* ptr) {
 }
 
 static uint32_t*
-fdt_token_begin(struct fdt* fdt) {
+fdt_token_begin(struct fdt* fdt)
+{
     return (uint32_t*)(((void*)fdt) + be32toh(fdt->off_dt_struct));
 }
 
 static uint32_t*
-fdt_next_token(struct fdt* fdt, uint32_t* token) {
+fdt_next_token(struct fdt* fdt, uint32_t* token)
+{
     struct fdt_node* node;
     struct fdt_prop* prop;
     size_t str_len;
@@ -61,7 +64,8 @@ fdt_next_token(struct fdt* fdt, uint32_t* token) {
 }
 
 static uint32_t*
-fdt_next_token_after_node(struct fdt* fdt, struct fdt_node* node) {
+fdt_next_token_after_node(struct fdt* fdt, struct fdt_node* node)
+{
     uint32_t* token_ptr = (uint32_t*)node;
     if (node == NULL) {
         return NULL;
@@ -94,7 +98,8 @@ fdt_next_token_after_node(struct fdt* fdt, struct fdt_node* node) {
 }
 
 enum fdt_error
-fdt_verify(struct fdt* fdt) {
+fdt_verify(struct fdt* fdt)
+{
     if (be32toh(fdt->magic) != FDT_HEADER_MAGIC) {
         return FDT_BAD_MAGIC;
     }
@@ -105,27 +110,32 @@ fdt_verify(struct fdt* fdt) {
 }
 
 size_t
-fdt_size(struct fdt* fdt) {
+fdt_size(struct fdt* fdt)
+{
     return (size_t)be32toh(fdt->totalsize);
 }
 
 size_t
-fdt_prop_val_len(struct fdt_prop* prop) {
+fdt_prop_val_len(struct fdt_prop* prop)
+{
     return (size_t)be32toh(prop->len);
 }
 
 void*
-fdt_prop_val(struct fdt_prop* prop) {
+fdt_prop_val(struct fdt_prop* prop)
+{
     return (void*)(prop->val);
 }
 
 size_t
-fdt_prop_name_offset(struct fdt_prop* prop) {
+fdt_prop_name_offset(struct fdt_prop* prop)
+{
     return (size_t)be32toh(prop->name_offset);
 }
 
 struct fdt_node*
-fdt_node_begin(struct fdt* fdt) {
+fdt_node_begin(struct fdt* fdt)
+{
     uint32_t* token_ptr = fdt_token_begin(fdt);
     while (token_ptr != NULL) {
         uint32_t token = be32toh(*token_ptr);
@@ -138,7 +148,8 @@ fdt_node_begin(struct fdt* fdt) {
 }
 
 struct fdt_node*
-fdt_next_node(struct fdt* fdt, struct fdt_node* node) {
+fdt_next_node(struct fdt* fdt, struct fdt_node* node)
+{
     uint32_t* token_ptr = fdt_next_token(fdt, (uint32_t*)node);
     while (token_ptr != NULL) {
         uint32_t token = be32toh(*token_ptr);
@@ -151,7 +162,8 @@ fdt_next_node(struct fdt* fdt, struct fdt_node* node) {
 }
 
 struct fdt_prop*
-fdt_node_prop_begin(struct fdt* fdt, struct fdt_node* node) {
+fdt_node_prop_begin(struct fdt* fdt, struct fdt_node* node)
+{
     uint32_t* token_ptr = fdt_next_token(fdt, (uint32_t*)node);
 
     while (token_ptr != NULL) {
@@ -175,7 +187,8 @@ fdt_node_prop_begin(struct fdt* fdt, struct fdt_node* node) {
 }
 
 struct fdt_prop*
-fdt_node_next_prop(struct fdt* fdt, struct fdt_prop* prop) {
+fdt_node_next_prop(struct fdt* fdt, struct fdt_prop* prop)
+{
     uint32_t* token_ptr = fdt_next_token(fdt, (uint32_t*)prop);
 
     while (token_ptr != NULL) {
@@ -200,7 +213,8 @@ fdt_node_next_prop(struct fdt* fdt, struct fdt_prop* prop) {
 }
 
 struct fdt_node*
-fdt_node_subnode_begin(struct fdt* fdt, struct fdt_node* node) {
+fdt_node_subnode_begin(struct fdt* fdt, struct fdt_node* node)
+{
     uint32_t* token_ptr = fdt_next_token(fdt, (uint32_t*)node);
 
     while (token_ptr != NULL) {
@@ -224,7 +238,8 @@ fdt_node_subnode_begin(struct fdt* fdt, struct fdt_node* node) {
 }
 
 struct fdt_node*
-fdt_node_next_subnode(struct fdt* fdt, struct fdt_node* subnode) {
+fdt_node_next_subnode(struct fdt* fdt, struct fdt_node* subnode)
+{
     uint32_t* token_ptr = fdt_next_token_after_node(fdt, subnode);
 
     while (token_ptr != NULL) {
@@ -250,7 +265,8 @@ fdt_node_next_subnode(struct fdt* fdt, struct fdt_node* subnode) {
 }
 
 const char*
-fdt_string_from_offset(struct fdt* fdt, size_t offset) {
+fdt_string_from_offset(struct fdt* fdt, size_t offset)
+{
     const char* strings_start = (char*)fdt + be32toh(fdt->off_dt_strings);
     const char* strings_end = strings_start + be32toh(fdt->size_dt_strings);
 
@@ -267,23 +283,27 @@ fdt_string_from_offset(struct fdt* fdt, size_t offset) {
  */
 
 const char*
-fdt_node_name(struct fdt_node* node) {
+fdt_node_name(struct fdt_node* node)
+{
     return node->unit_name;
 }
 
 const char*
-fdt_prop_name(struct fdt* fdt, struct fdt_prop* prop) {
+fdt_prop_name(struct fdt* fdt, struct fdt_prop* prop)
+{
     return fdt_string_from_offset(fdt, fdt_prop_name_offset(prop));
 }
 
 struct fdt_prop*
 fdt_get_prop_by_name(
     struct fdt* fdt, struct fdt_node* node, struct fdt_prop* start, const char* name
-) {
+)
+{
     struct fdt_prop* prop;
     if (start != NULL) {
         prop = fdt_node_next_prop(fdt, start);
-    } else {
+    }
+    else {
         prop = fdt_node_prop_begin(fdt, node);
     }
 
@@ -298,7 +318,8 @@ fdt_get_prop_by_name(
 }
 
 bool
-fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compat) {
+fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compat)
+{
     struct fdt_prop* prop = fdt_get_prop_by_name(fdt, node, NULL, "compatible");
 
     if (prop == NULL) {
@@ -324,11 +345,13 @@ fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compa
 }
 
 struct fdt_node*
-fdt_find_compatible_node(struct fdt* fdt, struct fdt_node* start, const char* compat) {
+fdt_find_compatible_node(struct fdt* fdt, struct fdt_node* start, const char* compat)
+{
     struct fdt_node* node;
     if (start != NULL) {
         node = fdt_next_node(fdt, start);
-    } else {
+    }
+    else {
         node = fdt_node_begin(fdt);
     }
 

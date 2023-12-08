@@ -1,0 +1,49 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+    - master
+
+  pull_request:
+    branches:
+    - master
+
+  workflow_dispatch:
+
+# We only care about the latest revision of a PR, so cancel all previous instances.
+concurrency:
+  group: lint-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - uses: actions/setup-python@v4
+      with: { python-version: "3.12" }
+
+    - name: Install LLVM 17
+      run: |
+          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+          sudo apt-add-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-17 main"
+          sudo apt update
+          sudo apt install llvm-17 llvm-17-dev llvm-17-tools clang-17 clang-tidy-17 clang-format-17 clang-tools-17 libclang-17-dev -y
+
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-17 170
+
+    - name: Install codespell
+      run: pip3 install codespell
+
+    - name: Lint
+      run: |
+        make format
+        git diff --exit-code
+
+    - name: Spell check
+      run: make spellcheck
