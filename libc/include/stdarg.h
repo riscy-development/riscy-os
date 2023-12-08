@@ -7,7 +7,7 @@ extern "C" {
 
 #ifdef __GNUC__
 /* We use the GCC stdarg as it is compiler-specific. */
-#    include_next <stdarg.h>
+#    include_next <stdarg.h> /* NOLINT */
 #else
 #    error Only compatible with GCC right now.
 #endif

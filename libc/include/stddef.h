@@ -94,9 +94,11 @@ typedef int wchar_t;
  * Get the offset of a MEMBER in a struct of type TYPE.
  */
 #ifdef __GNUC__
+/* NOLINTNEXTLINE(readability-identifier-naming) */
 #    define offsetof(__TYPE, __MEMBER) __builtin_offsetof(__TYPE, __MEMBER)
 #else
 /* https://en.wikipedia.org/wiki/Offsetof */
+/* NOLINTNEXTLINE(readability-identifier-naming) */
 #    define offsetof(__TYPE, __MEMBER) ((size_t) & (((__TYPE*)0)->__MEMBER))
 #endif
 
