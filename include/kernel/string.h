@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 #ifndef NULL
-#define NULL 0
+#    define NULL 0
 #endif
 
 void memcpy(uint8_t* src, uint8_t* dest, size_t len);
