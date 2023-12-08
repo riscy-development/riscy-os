@@ -1,4 +1,5 @@
 #include <kernel/of/fdt.h>
+#include <kernel/early_output.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -48,30 +49,21 @@ fini()
 unsigned char* UART = (unsigned char*)0x10000000; // NOLINT
 
 void
-putchar(char c)
+dead_simple_uart_putchar(char c)
 {
     *UART = c;
-}
-
-void
-puts(const char* str)
-{
-    while (*str != '\0') {
-        putchar(*str);
-        str++;
-    }
 }
 
 __attribute__((constructor)) void
 foo(void)
 {
-    puts("Hello from a global constructor!\n");
+    early_puts("Hello from a global constructor!\n");
 }
 
 __attribute__((destructor)) void
 bar(void)
 {
-    puts("Hello from a global destructor!\n");
+    early_puts("Hello from a global destructor!\n");
 }
 
 // Only in kernel.c until we get a framework for output setup
@@ -80,13 +72,13 @@ fdt_dump(struct fdt* fdt) {
     struct fdt_node* node = fdt_node_begin(fdt);
     int depth = 1;
 
-    puts("FDT {\n");
+    early_puts("FDT {\n");
     while (node != NULL && depth > 0) {
         for (int i = 0; i < depth; i++) {
-            putchar('\t');
+            early_putchar('\t');
         }
-        puts(fdt_node_name(node));
-        putchar('\n');
+        early_puts(fdt_node_name(node));
+        early_putchar('\n');
 
         struct fdt_node* subnode = fdt_node_subnode_begin(fdt, node);
         if (subnode) {
@@ -103,20 +95,23 @@ fdt_dump(struct fdt* fdt) {
         node = fdt_next_node(fdt, node);
         depth -= 1;
     }
-    puts("}\n");
+    early_puts("}\n");
 }
 
 void
 kmain(uint64_t hartid, struct fdt* fdt)
 {
+    // Register the callback
+    register_early_putchar(dead_simple_uart_putchar);
+    
     // Print core ID
-    puts("Running on hart ");
-    putchar((char)hartid + '0');
-    putchar('\n');
+    early_puts("Running on hart ");
+    early_putchar((char)hartid + '0');
+    early_putchar('\n');
 
     // Check the FDT
-    if (fdt_verify(fdt)) {
-        puts("Cannot Read the FDT!\n");
+    if (fdt_verify(fdt) != FDT_VALID) {
+        early_puts("Cannot Read the FDT!\n");
         kernel_panic();
     }
 
@@ -125,11 +120,11 @@ kmain(uint64_t hartid, struct fdt* fdt)
     // Testing FDT functions
     struct fdt_node *clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
     if(clint == NULL) {
-      puts("Could not find the CLINT!\n");
+      early_puts("Could not find the CLINT!\n");
     } else {
-      puts("Found the CLINT!\n");
-      puts(fdt_node_name(clint));
-      putchar('\n');
+      early_puts("Found the CLINT!\n");
+      early_puts(fdt_node_name(clint));
+      early_putchar('\n');
     }
 
     // Call global ctors
@@ -137,7 +132,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
     init();
 
     for (;;) {
-        putchar(*UART);
+        early_putchar(*UART);
 
         if (*UART == '%')
             break;
