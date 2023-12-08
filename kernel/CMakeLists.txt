@@ -32,7 +32,6 @@ set(
 
   # Main script
   #kmain.cpp
-  #string.c
 )
 
 # Get list of include directories
