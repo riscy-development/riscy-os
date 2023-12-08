@@ -1,6 +1,32 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+
+/*
+ * Checklist of formatting functionality
+ *
+ * %% - [DONE]
+ * %c - [DONE]
+ *
+ * TODO:
+ * %d
+ * %i
+ * %e
+ * %E
+ * %f
+ * %g
+ * %G
+ * %o
+ * %s
+ * %u
+ * %x
+ * %X
+ * %p
+ * %n
+ *
+ * Ignoring modifiers for now
+ */
 
 static int formatted_print(void(*puts)(const char*), const char *fmt, va_list args) 
 {
@@ -13,10 +39,10 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
   int buf_head = 0;
 
   // Add backup null terminator
-  buf[BUF_LEN] = '\0'
+  buf[BUF_LEN] = '\0';
 
   bool escaped = false;
-  for(size_t i = 0; i < strlen(fmt); i++) 
+  do 
   {
     if(escaped) {
       // Flush the buffer no matter what
@@ -28,6 +54,8 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
       }
 
       switch(*fmt) {
+        case '\0':
+          // In this case we need to output the final %
         case '%':
           buf[0] = '%';
           buf[1] = '\0';
@@ -35,8 +63,8 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           num_chars += 1;
           break;
         case 'c':
-          buf[0] = va_arg(args, char);
-          buf[1] = '\0'
+          buf[0] = (char)va_arg(args, int);
+          buf[1] = '\0';
           (*puts)(buf);
           num_chars += 1;
           break;
@@ -50,7 +78,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
       }
     }
 
-    if(!escaped) {
+    if(!escaped && *fmt != '\0') {
       if(*fmt == '%') {
         escaped = true;
       } else {
@@ -65,6 +93,16 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
         }
       }
     }
+
+    fmt++;
+  } while(*fmt != '\0');
+  
+  // Flush the buffer no matter what
+  if(buf_head > 0) {
+    buf[buf_head] = '\0';
+    (*puts)(buf);
+    num_chars += buf_head;
+    buf_head = 0;
   }
 
   return num_chars;
@@ -72,15 +110,6 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
 
 void printf_puts(const char *s) {
   // TODO
-}
-
-int printf(const char *fmt, ...) 
-{
-  va_list args;
-  va_begin(args,fmt);
-  int num_chars = formatted_print(printf_puts,fmt,args);
-  va_end(args);
-  return num_chars;
 }
 
 #ifdef KERNEL
@@ -92,13 +121,23 @@ static void printk_puts(const char *s)
   early_puts(s);
 }
 
-int printk(const char *fmt, ...) 
+#endif
+
+int printf(const char *fmt, ...) 
 {
   va_list args;
-  va_begin(args,fmt);
-  int num_chars = formatted_print(printk_puts,fmt,args);
+  va_start(args,fmt);
+  
+  int num_chars = formatted_print(
+#ifdef KERNEL
+      printk_puts
+#else
+      printf_puts
+#endif
+      ,fmt,args);
+
   va_end(args);
+
   return num_chars;
 }
-#endif
 

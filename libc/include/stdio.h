@@ -10,7 +10,7 @@ extern "C" {
 int printf(const char *fmt, ...);
 
 #ifdef KERNEL
-int printk(const char *fmt, ...);
+#define printk(...) printf(__VA_ARGS__)
 #endif
 
 #ifdef __cplusplus
