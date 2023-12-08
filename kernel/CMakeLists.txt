@@ -32,7 +32,7 @@ set(
 
   # Main script
   #kmain.cpp
-  string.c
+  #string.c
 )
 
 # Get list of include directories
@@ -56,7 +56,7 @@ add_subdirectory("of") # Open Firmware Support
 add_executable(riscy-os ${KERNEL_SOURCES})
 
 # Libraries
-target_link_libraries(riscy-os libgcc)
+target_link_libraries(riscy-os libgcc riscy-libk)
 
 # Set include directories
 target_include_directories(riscy-os PUBLIC ${KERNEL_INCLUDE_DIRS})

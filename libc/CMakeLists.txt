@@ -1,0 +1,49 @@
+# ----- Sources -----
+list(
+  APPEND LIBC_SOURCES
+  # Strings
+  string.c
+)
+
+list(
+  APPEND LIBC_INCLUDES
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
+list(
+  APPEND LIBK_INCLUDES
+  ${LIBC_INCLUDES}
+  "${CMAKE_CURRENT_SOURCE_DIR}/../include" # kernel includes
+)
+
+# ----- Targets -----
+# Create targets
+add_library(riscy-libc STATIC ${LIBC_SOURCES})  # TODO how do we build shared libc?
+add_library(riscy-libk STATIC ${LIBC_SOURCES})
+
+# Set include paths
+target_include_directories(riscy-libc PUBLIC ${LIBC_INCLUDES})
+target_include_directories(riscy-libk PUBLIC ${LIBK_INCLUDES})
+
+# Link to libgcc
+target_link_libraries(riscy-libc libgcc)
+target_link_libraries(riscy-libk libgcc)
+
+# Set compile defs
+target_compile_definitions(riscy-libk PRIVATE KERNEL) # -D KERNEL
+
+# Force include autoconf.h
+set(AUTOCONF_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/../include/generated/autoconf.h")
+
+set(CMAKE_C_FLAGS "-include ${AUTOCONF_HEADER}")
+set(CMAKE_CXX_FLAGS "-include ${AUTOCONF_HEADER}")
+
+# Build libk with kernel flags
+separate_arguments(ARCH_LIBK_C_FLAGS UNIX_COMMAND ${ARCH_KERN_C_FLAGS})
+separate_arguments(ARCH_LIBK_CXX_FLAGS UNIX_COMMAND ${ARCH_KERN_CXX_FLAGS})
+
+target_compile_options(
+  riscy-libk PRIVATE
+  $<$<COMPILE_LANGUAGE:C>:${ARCH_LIBK_C_FLAGS}>
+  $<$<COMPILE_LANGUAGE:CXX>:${ARCH_LIBK_CXX_FLAGS}>
+)

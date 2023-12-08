@@ -1,6 +1,6 @@
 #include <kernel/of/fdt.h>
-#include <kernel/stdint.h>
-#include <kernel/string.h>
+#include <stdint.h>
+#include <string.h>
 
 /* Init and Fini arrays */
 typedef void (*func_ptr)(void);

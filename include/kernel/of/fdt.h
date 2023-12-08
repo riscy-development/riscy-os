@@ -1,8 +1,8 @@
 #ifndef __KERNEL_OF_FDT_H__
 #define __KERNEL_OF_FDT_H__
 
-#include <kernel/stdint.h>
-#include <kernel/string.h>
+#include <stdint.h>
+#include <string.h>
 
 #define FDT_COMPAT_VERSION 17
 

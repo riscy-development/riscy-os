@@ -77,6 +77,9 @@ set_property(
   "${CMAKE_SOURCE_DIR}/toolchain/build/${CMAKE_SYSTEM_PROCESSOR}/gcc/gcc/libgcc.a"
 )
 
+# Set up lib{c,k}
+add_subdirectory(libc)
+
 # Add the kernel
 add_subdirectory(kernel)
 

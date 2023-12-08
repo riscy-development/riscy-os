@@ -1,4 +1,4 @@
-#include <kernel/string.h>
+#include <string.h>
 
 void
 memcpy(uint8_t* src, uint8_t* dest, size_t n) {
