@@ -1,8 +1,11 @@
+#include <assert.h>
 #include <string.h>
 
 int
 strcmp(const char* lhs, const char* rhs)
 {
+    assert(lhs && rhs);
+
     const unsigned char* lhs_p = (const unsigned char*)lhs;
     const unsigned char* rhs_p = (const unsigned char*)rhs;
 

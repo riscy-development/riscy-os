@@ -1,8 +1,11 @@
+#include <assert.h>
 #include <string.h>
 
 int
 memcmp(const void* lhs, const void* rhs, size_t count)
 {
+    assert(lhs && rhs);
+
     const uint8_t* lhs_p = lhs;
     const uint8_t* rhs_p = rhs;
 

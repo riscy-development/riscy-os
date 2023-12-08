@@ -1,9 +1,12 @@
+#include <assert.h>
 #include <stdint.h>
 #include <string.h>
 
 void*
 memmove(void* dest, const void* src, size_t count)
 {
+    assert(dest && src);
+
     uint8_t* dest_p = dest;
     const uint8_t* src_p = src;
 

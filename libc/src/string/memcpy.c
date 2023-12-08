@@ -1,7 +1,11 @@
+#include <assert.h>
 #include <string.h>
 
 void*
-memcpy(void* restrict dest, const void* restrict src, size_t count) {
+memcpy(void* restrict dest, const void* restrict src, size_t count)
+{
+    assert(dest && src);
+
     uint8_t* restrict dest_p = dest;
     const uint8_t* restrict src_p = src;
 
