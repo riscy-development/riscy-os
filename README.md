@@ -10,6 +10,7 @@ Make sure you have Nix installed. Then run the following
 $ git submodule update --init --recursive
 $ git submodule update --remote
 $ nix-shell
+$ make menuconfig
 $ make
 ```
 
