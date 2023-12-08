@@ -1,17 +1,15 @@
 #include <string.h>
 
 int
-strcmp(const char* lhs, const char* rhs) {
+strcmp(const char* lhs, const char* rhs)
+{
     const unsigned char* lhs_p = (const unsigned char*)lhs;
     const unsigned char* rhs_p = (const unsigned char*)rhs;
 
-    while (*lhs_p && *rhs_p) {
-        if (*lhs_p < *rhs_p)
-            return -1;
-
-        if (*lhs_p > *rhs_p)
-            return 1;
+    while (*lhs_p == *rhs_p && *lhs_p) {
+        ++lhs_p;
+        ++rhs_p;
     }
 
-    return 0;
+    return *lhs_p - *rhs_p;
 }
