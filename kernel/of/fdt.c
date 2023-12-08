@@ -263,6 +263,10 @@ const char * fdt_string_from_offset(struct fdt *fdt, size_t offset)
   return s;
 }
 
+/*
+ * Helper Functions
+ */
+
 const char * fdt_node_name(struct fdt_node *node) 
 {
   return node->unit_name;
@@ -271,5 +275,69 @@ const char * fdt_node_name(struct fdt_node *node)
 const char * fdt_prop_name(struct fdt *fdt, struct fdt_prop *prop)
 {
   return fdt_string_from_offset(fdt, fdt_prop_name_offset(prop));
+}
+
+struct fdt_prop * fdt_get_prop_by_name(struct fdt *fdt, struct fdt_node *node, struct fdt_prop *start, const char *name)
+{
+  struct fdt_prop *prop;
+  if(start != NULL) {
+    prop = fdt_node_next_prop(fdt,start);
+  } else {
+    prop = fdt_node_prop_begin(fdt, node);
+  }
+
+  while(prop != NULL) {
+    const char *prop_name = fdt_prop_name(fdt, prop);
+    if(prop_name != NULL && strcmp(name, prop_name) == 0) {
+      return prop;
+    }
+    prop = fdt_node_next_prop(fdt, prop);
+  }
+  return NULL;
+}
+
+int fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat)
+{
+  struct fdt_prop *prop = fdt_get_prop_by_name(fdt, node, NULL, "compatible");
+  
+  if(prop == NULL) {
+    return 0;
+  }
+
+  size_t strings_len = fdt_prop_val_len(prop);
+  const char *strings = fdt_prop_val(prop);
+
+  while(strings_len > 0) {
+    size_t curr_len = (size_t)strlen(strings) + 1;
+    const char *curr_string = strings;
+
+    if(strcmp(curr_string,compat) == 0) {
+      return 1;
+    }
+
+    strings += curr_len;
+    strings_len -= curr_len;
+  }
+
+  return 0;
+}
+
+struct fdt_node * fdt_find_compatible_node(struct fdt *fdt, struct fdt_node *start, const char *compat) 
+{
+  struct fdt_node *node;
+  if(start != NULL) {
+    node = fdt_next_node(fdt, start);
+  } else {
+    node = fdt_node_begin(fdt);
+  }
+
+  while(node != NULL) {
+    if(fdt_node_is_compatible(fdt, node, compat)) {
+      return node;
+    }
+    node = fdt_next_node(fdt,node);
+  }
+
+  return NULL;
 }
 

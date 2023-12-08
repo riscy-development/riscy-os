@@ -9,7 +9,7 @@ memcpy(uint8_t* src, uint8_t* dest, size_t n) {
 }
 
 int
-strlen(char* c) {
+strlen(const char* c) {
     int count = 0;
     while (*c) {
         count++;
@@ -19,7 +19,7 @@ strlen(char* c) {
 }
 
 int
-strcmp(char* a, char* b) {
+strcmp(const char* a, const char* b) {
     while (*a != '\0' && *b != '\0') {
         if (*a < *b) {
             return -1;
@@ -27,6 +27,15 @@ strcmp(char* a, char* b) {
         if (*a > *b) {
             return 1;
         }
+
+        a++;
+        b++;
+    }
+    if(*a > *b) {
+      return 1;
+    }
+    if(*a < *b) {
+      return -1;
     }
     return 0;
 }

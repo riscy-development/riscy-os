@@ -12,8 +12,8 @@ extern "C" {
 #endif
 
 void memcpy(uint8_t* src, uint8_t* dest, size_t len);
-int strlen(char*);
-int strcmp(char* a, char* b);
+int strlen(const char*);
+int strcmp(const char* a, const char* b);
 
 #ifdef __cplusplus
 }

@@ -108,9 +108,20 @@ kmain(uint64_t hartid, struct fdt* fdt) {
     // Check the FDT
     if (fdt_verify(fdt)) {
         puts("Cannot Read the FDT!\n");
+        // PANIC! (this is actually unrecoverable)
     }
 
     fdt_dump(fdt);
+
+    // Testing FDT functions
+    struct fdt_node *clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
+    if(clint == NULL) {
+      puts("Could not find the CLINT!\n");
+    } else {
+      puts("Found the CLINT!\n");
+      puts(fdt_node_name(clint));
+      putchar('\n');
+    }
 
     // Call global ctors
     preinit();

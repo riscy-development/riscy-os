@@ -122,6 +122,25 @@ const char * fdt_node_name(struct fdt_node *node);
  */
 const char * fdt_prop_name(struct fdt *fdt, struct fdt_prop *prop);
 
+/*
+ * Find a property in "node" named "name" (or NULL if none exist)
+ * The search will begin on property "start" (exclusive)
+ * or if "start" is NULL, the first property in the node (inclusive)
+ */
+struct fdt_prop * fdt_get_prop_by_name(struct fdt *fdt, struct fdt_node *node, struct fdt_prop *start, const char *name);
+
+/*
+ * Find a node in the device tree compatible with "compat"
+ * The search will begin on node "start" (exclusive)
+ * or if "start" is NULL, the first node in the FDT (inclusive)
+ */
+struct fdt_node * fdt_find_compatible_node(struct fdt *fdt, struct fdt_node *start, const char *compat);
+
+/*
+ * Returns 1 if "node" is compatible with "compat", else 0
+ */
+int fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat); 
+
 #ifdef __cplusplus
 }
 #endif
