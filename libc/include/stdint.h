@@ -1,13 +1,11 @@
-#ifndef __KERNEL_STDINT_H__
-#define __KERNEL_STDINT_H__
+#ifndef __LIBC__STDINT_H__
+#define __LIBC__STDINT_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef NULL
-#    define NULL 0
-#endif
+#warning stdint.h is incomplete, please be wary when including.
 
 typedef char int8_t;
 typedef short int16_t;
