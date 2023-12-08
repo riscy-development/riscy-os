@@ -12,6 +12,7 @@ $ git submodule update --remote
 $ nix-shell
 $ make menuconfig
 $ make
+$ make run
 ```
 
 Follow configuration menu, and save. 
