@@ -74,6 +74,38 @@ bar(void)
     puts("Hello from a global destructor!\n");
 }
 
+// Only in kernel.c until we get a framework for output setup
+static void
+fdt_dump(struct fdt* fdt) {
+    struct fdt_node* node = fdt_node_begin(fdt);
+    int depth = 1;
+
+    puts("FDT {\n");
+    while (node != NULL && depth > 0) {
+        for (int i = 0; i < depth; i++) {
+            putchar('\t');
+        }
+        puts(fdt_node_name(node));
+        putchar('\n');
+
+        struct fdt_node* subnode = fdt_node_subnode_begin(fdt, node);
+        if (subnode) {
+            depth += 1;
+            node = subnode;
+            continue;
+        }
+        struct fdt_node* sibling_node = fdt_node_next_subnode(fdt, node);
+        if (sibling_node) {
+            node = sibling_node;
+            continue;
+        }
+
+        node = fdt_next_node(fdt, node);
+        depth -= 1;
+    }
+    puts("}\n");
+}
+
 void
 kmain(uint64_t hartid, struct fdt* fdt)
 {
@@ -83,11 +115,21 @@ kmain(uint64_t hartid, struct fdt* fdt)
     putchar('\n');
 
     // Check the FDT
-    if (verify_fdt(fdt)) {
-        puts("Using a supported FDT Version\n");
+    if (fdt_verify(fdt)) {
+        puts("Cannot Read the FDT!\n");
+        kernel_panic();
     }
-    else {
-        puts("Cannot Read the FDT (Unsupported Version!)\n");
+
+    fdt_dump(fdt);
+
+    // Testing FDT functions
+    struct fdt_node *clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
+    if(clint == NULL) {
+      puts("Could not find the CLINT!\n");
+    } else {
+      puts("Found the CLINT!\n");
+      puts(fdt_node_name(clint));
+      putchar('\n');
     }
 
     // Call global ctors

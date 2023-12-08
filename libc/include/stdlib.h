@@ -18,6 +18,10 @@ extern "C" {
  */
 [[noreturn]] void abort();
 
+#ifdef KERNEL
+#define kernel_panic() abort()
+#endif
+
 #if 0 /* NOLINT: TODO */
 [[noreturn]] void exit(int exit_code);
 [[noreturn]] void quick_exit(int exit_code);

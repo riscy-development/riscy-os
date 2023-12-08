@@ -36,7 +36,7 @@ bswap16(uint16_t x) {
 #ifdef __GNUC__
     return __builtin_bswap16(x);
 #else
-    return (uint16_t)((x & 0xF) << 8) | (uint16_t)((x >> 8) & 0xF);
+    return (uint16_t)((x & 0xFF) << 8) | (uint16_t)((x >> 8) & 0xFF);
 #endif
 }
 
@@ -48,8 +48,8 @@ bswap32(uint32_t x) {
 #ifdef __GNUC__
     return __builtin_bswap32(x);
 #else
-    return (((uint32_t)bswap16(x & 0xFF)) << 16)
-           | ((uint32_t)bswap16((uint16_t)(x >> 16)) & 0xFF);
+    return (((uint32_t)bswap16(x & 0xFFFF)) << 16)
+           | ((uint32_t)bswap16((uint16_t)(x >> 16)) & 0xFFFF);
 #endif
 }
 
@@ -61,8 +61,8 @@ bswap64(uint64_t x) {
 #ifdef __GNUC__
     return __builtin_bswap64(x);
 #else
-    return (((uint64_t)bswap32(x & 0xFFFF)) << 32)
-           | ((uint64_t)bswap32((uint32_t)(x >> 32)) & 0xFFFF);
+    return (((uint64_t)bswap32(x & 0xFFFFFFFF)) << 32)
+           | ((uint64_t)bswap32((uint32_t)(x >> 32)) & 0xFFFFFFFF);
 #endif
 }
 
