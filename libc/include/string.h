@@ -83,17 +83,45 @@ char* strtok(char* restrict str, const char* restrict delim);
  * @param src The source memory location.
  * @param count How many bytes to copy.
  *
- * @returns The destination (`dest`).
+ * @returns The destination array (`dest`).
  */
 void* memcpy(void* restrict dest, const void* restrict src, size_t count);
 
+/**
+ * Copies (uint8_t)ch into each of the first `count` chars in `dest`.
+ *
+ * Behavior undefined if access occurs beyond the end of the `dest array.
+ * Behavior undefined if `dest` is a NULL pointer.
+ *
+ * @param dest The destination array.
+ * @param ch The value to set in `dest`.
+ * @param count How many bytes to set in `dest`.
+ *
+ * @returns The destination array (`dest`).
+ */
 void* memset(void* dest, int ch, size_t count);
-void* memset_explicit(void* dest, int ch, size_t count); /* just call memset here */
+
+/**
+ * Copies (uint8_t)ch into each of the first `count` chars in `dest`.
+ *
+ * Same as `memset`, but the compiler isn't allowed to optimize it out.
+ *
+ * Behavior undefined if access occurs beyond the end of the `dest array.
+ * Behavior undefined if `dest` is a NULL pointer.
+ *
+ * @param dest The destination array.
+ * @param ch The value to set in `dest`.
+ * @param count How many bytes to set in `dest`.
+ *
+ * @returns The destination array (`dest`).
+ */
+inline void* memset_explicit(void* dest, int ch, size_t count);
+
 void* memmove(void* dest, const void* src, size_t count);
+int memcmp(const void* lhs, const void* rhs, size_t count);
 
 #if 0 /* NOLINT: TODO */
 void* memchr(const void* ptr, int ch, size_t count);
-int memcmp(const void* lhs, const void* rhs, size_t count);
 void* memccpy(void* restrict dest, const void* restrict src, int c, size_t count);
 #endif
 

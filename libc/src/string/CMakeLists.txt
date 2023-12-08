@@ -8,6 +8,8 @@ list(
 
   # Character array manipulation
   memcpy.c
+  memset.c
+  memset_explicit.c
 )
 
 list(
