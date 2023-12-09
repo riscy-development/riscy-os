@@ -2,6 +2,7 @@
 #include <kernel/mem/boot.h>
 #include<stdint.h>
 #include<assert.h>
+#include<stdio.h>
 
 /*
  * This file implements "boot_alloc" and "boot_free"
@@ -260,3 +261,19 @@ boot_free_list_next(struct boot_free_region* region)
 {
     return (struct boot_free_region*)region->next;
 }
+
+kerror_t boot_mem_dump(void)
+{
+  printk("--- BOOT ALLOC FREE REGIONS ---\n");
+  struct boot_free_region *curr = boot_free_list_begin();
+  while(curr != NULL) {
+    void *start = (void*)curr;
+    size_t size = curr->size;
+    void *end = start + size;
+    printk("[%p - %p] size = (%p bytes)\n", start, end, (void*)(uintptr_t)size);
+    curr = boot_free_list_next(curr);
+  }
+  printk("-------------------------------\n");
+  return KERR_SUCCESS;
+}
+

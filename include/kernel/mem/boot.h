@@ -21,6 +21,8 @@
  *       boot_free is meant more for giving more memory to the boot allocator
  *       than it is for freeing allocations made by boot_alloc (but theoretically could be used for that purpose).
 *
+*        All of these functions are also full of race conditions, so once 
+*        multi-threading/processing is up and running these cannot be used.
  */
 
 /*
@@ -43,5 +45,15 @@ void * boot_alloc(size_t size, unsigned int alignment);
  *
  */
 kerror_t boot_free(void *start, size_t size);
+
+/*
+ * Dumps the current memory map to printk in a backend defined (HUMAN READABLE) format or does nothing
+ *
+ * Returns:
+ *     KERR_SUCCESS on success
+ *     KERR_UNIMPL - if the backend didn't implement this function (should have no side effects)
+ *                   (it's not really essential, but is very nice for debugging)
+ */
+kerror_t boot_mem_dump(void);
 
 #endif

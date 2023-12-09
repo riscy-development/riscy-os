@@ -25,6 +25,9 @@ enum kerror {
     KERR_BUSY, // Less so an error, but an opportunity to do other work and try again
                // later
 
+    KERR_UNIMPL, // This feature is not implemented 
+                 // (call did nothing and should have zero side effects)
+
     KERR_UNKNOWN, // Unknown error (catch all DO NOT USE WITHOUT GOOD REASON)
 };
 typedef enum kerror kerror_t;

@@ -2,6 +2,7 @@
 #include <kernel/early_output.h>
 #include <kernel/of/fdt.h>
 #include <kernel/of/fdt_mem.h>
+#include <kernel/mem/boot.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,30 +106,19 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
     fdt_dump(fdt);
 
-    printk("FOODBADD = %p\n", (void*)0xf00dbadd);
-
-    // Testing FDT functions
-    struct fdt_node* node = fdt_find_node_by_device_type(fdt, NULL, "memory");
-    if (node == NULL) {
-        printk("Could not find node!\n");
-    }
-    else {
-        printk("Found node! (%s)\n", fdt_node_name(node));
-
-#define NUM_PARENTS 3
-        struct fdt_node* parents[NUM_PARENTS];
-        size_t parents_read = fdt_node_get_parents(fdt, node, parents, NUM_PARENTS);
-        assert(parents_read <= NUM_PARENTS);
-
-        printk("Parents of (%s)\n", fdt_node_name(node));
-        for (size_t i = 0; i < parents_read; i++) {
-            printk("Parent[%p] = %s\n", (void*)(uintptr_t)i, fdt_node_name(parents[i]));
-        }
-#undef NUM_PARENTS
-    }
-
     // Initialize the boot memory allocator using the FDT
     fdt_boot_mem_init(fdt);
+
+    // Testing the boot memory allocator
+
+    // Dump the mem map
+    boot_mem_dump();
+
+    // Allocate a page aligned to 16 bytes
+    void *alloc = boot_alloc(0x1000, 4);
+    printk("alloc = %p\n", alloc);
+
+    boot_mem_dump();
 
     // Call global ctors
     preinit();
