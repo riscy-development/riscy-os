@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-#include "kernel/of/fdt.h"
 #include "kernel/error.h"
+#include "kernel/of/fdt.h"
 
 #include <stdint.h>
 

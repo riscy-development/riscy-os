@@ -1,4 +1,4 @@
-#include "kernel/of/syscon.h"
+#include "drivers/syscon.h"
 
 #include "kernel/endian.h"
 #include "kernel/of/fdt.h"

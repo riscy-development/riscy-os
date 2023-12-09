@@ -2,7 +2,6 @@ set(
   KERNEL_OF_SOURCES
   # Runtime
   fdt.c
-  syscon.c
 )
 
 list(APPEND KERNEL_OF_INCLUDES include)
