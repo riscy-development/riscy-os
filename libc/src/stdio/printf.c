@@ -116,7 +116,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           num_chars += 1;
           escaped = false;
           break;
-        case 's':
+        case 's': /* %s */
           s = (char*)va_arg(args,char*);
           (*puts)(s);
           num_chars += (int)strlen(s);
