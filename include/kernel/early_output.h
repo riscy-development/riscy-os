@@ -1,5 +1,5 @@
-#ifndef __KERNEL_EARLY_OUTPUT_H__
-#define __KERNEL_EARLY_OUTPUT_H__
+#ifndef __KERNEL__EARLY_OUTPUT_H__
+#define __KERNEL__EARLY_OUTPUT_H__
 
 #include <kernel/error.h>
 
