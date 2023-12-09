@@ -168,7 +168,6 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
 
   return num_chars;
 
-#undef BUF_LEN
 }
 
 void printf_puts(const char *s) {
