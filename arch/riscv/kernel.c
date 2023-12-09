@@ -73,7 +73,7 @@ fdt_dump(struct fdt* fdt) {
     struct fdt_node* node = fdt_node_begin(fdt);
     int depth = 1;
 
-    printk("FDT {\n");
+    printk("FDT = (%p) {\n", fdt);
     while (node != NULL && depth > 0) {
         for (int i = 0; i < depth; i++) {
             printk("\t");
@@ -114,6 +114,8 @@ kmain(uint64_t hartid, struct fdt* fdt)
     }
 
     fdt_dump(fdt);
+
+    printk("FOODBADD = %p\n", (void*)0xf00dbadd);
 
     // Testing FDT functions
     struct fdt_node *clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");

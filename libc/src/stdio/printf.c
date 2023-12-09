@@ -2,31 +2,72 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdint.h>
+
+#define POINTERS_USE_CAPTIAL_HEX true
 
 /*
  * Checklist of formatting functionality
  *
  * %% - [DONE]
  * %c - [DONE]
- * %s
+ * %s - [DONE]
+ * %p - [DONE]
  *
- * TODO:
+ * TODO: (ordered by importance)
+ * %x
+ * %u
  * %d
+ *
+ * (from this point on who cares)
  * %i
  * %e
  * %E
- * %f
  * %g
  * %G
  * %o
- * %u
- * %x
  * %X
- * %p
  * %n
+ *
+ * (I don't even want to think about this one)
+ * %f
  *
  * Ignoring modifiers for now
  */
+
+// Prints for "%p" and returns the number of characters printed
+static int pointer_print(void(*puts)(const char*), void *p) 
+{
+  uintptr_t ip = (uintptr_t)p;
+  
+  // 2 hex digits per byte + 2 digits for "0x" + 1 null terminator
+#define BUF_LEN (sizeof(void*) * 2) + 2 + 1
+  char buf[BUF_LEN];
+
+  for(int i = BUF_LEN - 2; i > 1; i--) {
+    if(ip > 0) {
+      unsigned char digit = (unsigned char)(ip & 0xF);
+      if(digit < 10) {
+        digit += '0';
+      } else {
+        digit -= 10;
+        digit += POINTERS_USE_CAPTIAL_HEX ? 'A' : 'a';
+      }
+      buf[i] = digit;
+      ip >>= 4;
+    } else {
+      buf[i] = '0';
+    }
+  }
+
+  buf[0] = '0';
+  buf[1] = 'x';
+  buf[BUF_LEN-1] = '\0';
+  (*puts)(buf);
+ 
+  return BUF_LEN-1;
+#undef BUF_LEN
+}
 
 static int formatted_print(void(*puts)(const char*), const char *fmt, va_list args) 
 {
@@ -55,6 +96,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
 
       // Predefinitions for use in the switch statement
       char *s;
+      void *p;
       //
 
       switch(*fmt) {
@@ -77,7 +119,12 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
         case 's':
           s = (char*)va_arg(args,char*);
           (*puts)(s);
-          num_chars += strlen(s);
+          num_chars += (int)strlen(s);
+          escaped = false;
+          break;
+        case 'p':
+          p = (void*)va_arg(args,void*);
+          num_chars += pointer_print(puts,p);
           escaped = false;
           break;
         default:
@@ -119,6 +166,8 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
   }
 
   return num_chars;
+
+#undef BUF_LEN
 }
 
 void printf_puts(const char *s) {
