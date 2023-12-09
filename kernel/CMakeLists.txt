@@ -32,6 +32,7 @@ set(
 
   # Main script
   #kmain.cpp
+  early_output.c
 )
 
 # Get list of include directories

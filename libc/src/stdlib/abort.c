@@ -9,7 +9,7 @@
 abort()
 {
 #ifdef KERNEL
-    puts("KERNEL PANIC");
+    early_puts("KERNEL PANIC");
 #else
 /* TODO print something */
 #endif
