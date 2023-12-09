@@ -356,9 +356,9 @@ fdt_node_get_parents(
     size_t parents_len
 )
 {
-    // We can only traverse the FLAT device tree in forward order, so this is going to be
-    // painful (Also a big reason we want to unflatten the tree ASAP once we have memory
-    // allocation)
+    // We can only traverse the FLAT device tree in forward order, so this is going to
+    // be painful (Also a big reason we want to unflatten the tree ASAP once we have
+    // memory allocation)
 
     int max_depth = fdt_max_depth(fdt);
     if (max_depth < 0) {
