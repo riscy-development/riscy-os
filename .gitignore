@@ -504,4 +504,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Device Tree Files
+*.dtb
+*.dts
+
 # End of https://www.toptal.com/developers/gitignore/api/c,c++,python,emacs,nvim,visualstudiocode,clion,linux,macos,windows
