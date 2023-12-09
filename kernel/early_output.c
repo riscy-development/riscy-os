@@ -2,7 +2,7 @@
 #include <kernel/early_output.h>
 #include <stddef.h>
 
-static void(*early_putchar_array[EARLY_OUTPUT_MAX_PUTCHAR])(char) = {0};
+static putchar_t early_putchar_array[EARLY_OUTPUT_MAX_PUTCHAR] = {0};
 
 kerror_t register_early_putchar(void(*putchar)(char)) 
 {
