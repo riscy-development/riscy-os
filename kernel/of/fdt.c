@@ -177,6 +177,20 @@ fdt_next_reserve_entry(struct fdt* fdt, struct fdt_reserve_entry* entry)
     return entry;
 }
 
+void*
+fdt_reserve_entry_address(struct fdt_reserve_entry* entry)
+{
+    // TODO: 32-bit systems should use be32toh
+    return (void*)(uintptr_t)be64toh(entry->address);
+}
+
+size_t
+fdt_reserve_entry_size(struct fdt_reserve_entry* entry)
+{
+    // TODO: 32-bit systems should use be32toh
+    return (size_t)be64toh(entry->size);
+}
+
 size_t
 fdt_prop_val_len(struct fdt_prop* prop)
 {

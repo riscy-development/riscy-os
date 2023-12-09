@@ -1,8 +1,35 @@
 
 #include <kernel/mem/boot.h>
+#include<stdint.h>
+#include<assert.h>
+
+/*
+ * This file implements "boot_alloc" and "boot_free"
+ * using a simple "free list" allocator (think SLAB but worse)
+ *
+ */
+
+// Doubly-linked list of free regions in physical memory
+struct boot_free_region {
+  struct boot_free_region *next;
+  struct boot_free_region *prev;
+  size_t size;
+};
+
+//Forward declarations
+/*
+ * Get the first (lowest address) region in the free list
+ */
+struct boot_free_region * boot_free_list_begin(void);
+
+/*
+ * Get the next region (next higher address) in the free list (or NULL)
+ */
+struct boot_free_region * boot_free_list_next(struct boot_free_region *region);
+//
 
 // Linked list of free memory regions
-static boot_free_region* boot_free_list = NULL;
+static struct boot_free_region* boot_free_list = NULL;
 
 // How big will the region be if we allocate from the end?
 static ssize_t
@@ -13,7 +40,7 @@ region_size_alloc_after(
     uintptr_t end = (uintptr_t)region + region->size;
     // Get how far off from being aligned it is
     size_t unalignment = (end - size) & ((1ull << alignment) - 1ull);
-    return region->size - size - unalignment;
+    return ((ssize_t)region->size - (ssize_t)(size + unalignment));
 }
 
 // How big will the region be if we allocate from the start?
@@ -25,7 +52,7 @@ region_size_alloc_before(
     uintptr_t start = (uintptr_t)region;
     // Get how far off from being aligned it is
     size_t unalignment = (1ull << alignment) - (start & ((1ull << alignment) - 1ull));
-    return region->size - size - unalignment;
+    return ((ssize_t)region->size - (ssize_t)(size + unalignment));
 }
 
 static void*
@@ -113,9 +140,9 @@ boot_alloc(size_t size, unsigned int alignment)
         ssize_t after = region_size_alloc_after(curr, size, alignment);
         ssize_t before = region_size_alloc_before(curr, size, alignment);
         ssize_t greater = after > before ? after : before;
-        if (greater >= 0) {
-            if (smallest_fit > greater) {
-                smallest_fit = greater;
+        if (greater >= 0) { // This allocation is possible
+            if (smallest_fit > (size_t)greater) {
+                smallest_fit = (size_t)greater;
                 smallest_fitting = curr;
                 if (before == greater) {
                     should_alloc_before = true;
@@ -163,7 +190,7 @@ boot_free(void* start, size_t size)
     // We need to make sure that there are no overlapping regions
 
     struct boot_free_region* fully_before = NULL;
-    struct boot_free_region* full_after = NULL;
+    struct boot_free_region* fully_after = NULL;
 
     struct boot_free_region* curr = boot_free_list_begin();
     while (curr != NULL) {
@@ -182,7 +209,7 @@ boot_free(void* start, size_t size)
                 }
                 return KERR_SUCCESS;
             }
-            else if (next == NULL || (void* next) > end) {
+            else if (next == NULL || (void*)next > end) {
                 // Can only merge with before
                 curr->size += size;
                 return KERR_SUCCESS;
@@ -213,8 +240,11 @@ boot_free(void* start, size_t size)
         return KERR_EXIST;
     }
 
-    region->before = fully_before;
-    region->after = fully_after;
+    // Insert our new region into the linked list
+    region->prev = fully_before;
+    region->next = fully_after;
+    fully_after->prev = region;
+    fully_before->next = region;
     region->size = size;
     return KERR_SUCCESS;
 }
@@ -226,7 +256,7 @@ boot_free_list_begin(void)
 }
 
 struct boot_free_region*
-boot_free_region_next(struct boot_free_region* region)
+boot_free_list_next(struct boot_free_region* region)
 {
     return (struct boot_free_region*)region->next;
 }

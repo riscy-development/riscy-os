@@ -91,6 +91,16 @@ struct fdt_reserve_entry * fdt_reserve_entry_begin(struct fdt *fdt);
 struct fdt_reserve_entry * fdt_next_reserve_entry(struct fdt *fdt, struct fdt_reserve_entry *entry);
 
 /*
+ * Get the base address of this reserve entry
+ */
+void * fdt_reserve_entry_address(struct fdt_reserve_entry *entry);
+
+/*
+ * Get the size in bytes of this reserve entry
+ */
+size_t fdt_reserve_entry_size(struct fdt_reserve_entry *entry);
+
+/*
  * Get the length of the value of this property in bytes
  */
 size_t fdt_prop_val_len(struct fdt_prop *prop);

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <kernel/early_output.h>
 #include <kernel/of/fdt.h>
+#include <kernel/of/fdt_mem.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -125,6 +126,9 @@ kmain(uint64_t hartid, struct fdt* fdt)
         }
 #undef NUM_PARENTS
     }
+
+    // Initialize the boot memory allocator using the FDT
+    fdt_boot_mem_init(fdt);
 
     // Call global ctors
     preinit();
