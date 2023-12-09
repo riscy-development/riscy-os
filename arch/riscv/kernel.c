@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <kernel/early_output.h>
 #include <kernel/of/fdt.h>
 #include <stdint.h>
@@ -72,29 +73,16 @@ static void
 fdt_dump(struct fdt* fdt)
 {
     struct fdt_node* node = fdt_node_begin(fdt);
-    int depth = 1;
+
+    int depth = 0;
 
     printk("FDT = (%p) {\n", fdt);
-    while (node != NULL && depth > 0) {
+    while (node != NULL && depth >= 0) {
         for (int i = 0; i < depth; i++) {
             printk("\t");
         }
         printk("%s\n", fdt_node_name(node));
-
-        struct fdt_node* subnode = fdt_node_subnode_begin(fdt, node);
-        if (subnode) {
-            depth += 1;
-            node = subnode;
-            continue;
-        }
-        struct fdt_node* sibling_node = fdt_node_next_subnode(fdt, node);
-        if (sibling_node) {
-            node = sibling_node;
-            continue;
-        }
-
-        node = fdt_next_node(fdt, node);
-        depth -= 1;
+        node = fdt_next_node(fdt, node, &depth);
     }
     printk("}\n");
 }
@@ -119,12 +107,23 @@ kmain(uint64_t hartid, struct fdt* fdt)
     printk("FOODBADD = %p\n", (void*)0xf00dbadd);
 
     // Testing FDT functions
-    struct fdt_node* clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
-    if (clint == NULL) {
-        printk("Could not find the CLINT!\n");
+    struct fdt_node* node = fdt_find_node_by_unit_name(fdt, NULL, "cpu-map");
+    if (node == NULL) {
+        printk("Could not find node!\n");
     }
     else {
-        printk("Found the CLINT! (%s)\n", fdt_node_name(clint));
+        printk("Found node! (%s)\n", fdt_node_name(node));
+
+#define NUM_PARENTS 3
+        struct fdt_node* parents[NUM_PARENTS];
+        size_t parents_read = fdt_node_get_parents(fdt, node, parents, NUM_PARENTS);
+        assert(parents_read <= NUM_PARENTS);
+
+        printk("Parents of (%s)\n", fdt_node_name(node));
+        for (size_t i = 0; i < parents_read; i++) {
+            printk("Parent[%p] = %s\n", (void*)(uintptr_t)i, fdt_node_name(parents[i]));
+        }
+#undef NUM_PARENTS
     }
 
     // Call global ctors

@@ -8,6 +8,10 @@
 extern "C" {
 #endif
 
+// Bad debugging system (should integrate into Kconfig or delete entirely later)
+#define FDT_DEBUG_DEBUG_NAMELESS_NODES
+//
+
 #define FDT_COMPAT_VERSION 17
 
 struct fdt {
@@ -71,6 +75,12 @@ enum fdt_error fdt_verify(struct fdt *fdt);
 size_t fdt_size(struct fdt *fdt);
 
 /*
+ * Get the maximum depth of this FDT
+ * where a "root" node is at depth 0 and subnodes increase the depth by 1
+ */
+int fdt_max_depth(struct fdt *fdt);
+
+/*
  * Get the first FDT reserve_entry (or NULL if there are none)
  */
 struct fdt_reserve_entry * fdt_reserve_entry_begin(struct fdt *fdt);
@@ -103,7 +113,7 @@ struct fdt_node * fdt_node_begin(struct fdt *fdt);
 /*
  * Returns the next node in the tree (or NULL) traversing the entire tree regardless of depth
  */
-struct fdt_node * fdt_next_node(struct fdt *fdt, struct fdt_node *node);
+struct fdt_node * fdt_next_node(struct fdt *fdt, struct fdt_node *node, int *depth);
 
 /*
  * Returns the first property in this node (or NULL if there are none)
@@ -124,6 +134,16 @@ struct fdt_node * fdt_node_subnode_begin(struct fdt *fdt, struct fdt_node *node)
  * Returns the next subnode after this one (or NULL)
  */
 struct fdt_node * fdt_node_next_subnode(struct fdt *fdt, struct fdt_node *subnode);
+
+/*
+ * Populates the provided array parents, of size parents_size,
+ * with the parent node(s) of "node".
+ *
+ * Returns the number of ancestors added to parents[]
+ *
+ * "parents" will go from closest ancestor to furthest as the index increases
+ */
+size_t fdt_node_get_parents(struct fdt *fdt, struct fdt_node *node, struct fdt_node * parents[], size_t parents_size);
 
 /*
  * Get the string at offset "offset" in the string block
@@ -158,6 +178,24 @@ struct fdt_prop * fdt_get_prop_by_name(struct fdt *fdt, struct fdt_node *node, s
  * or if "start" is NULL, the first node in the FDT (inclusive)
  */
 struct fdt_node * fdt_find_compatible_node(struct fdt *fdt, struct fdt_node *start, const char *compat);
+
+/*
+ * Find a node in the device tree with "device_type" equal to "type"
+ * The search will begin on node "start" (exclusive)
+ * or if "start" is NULL, the first node in the FDT (inclusive)
+ */
+struct fdt_node * fdt_find_node_by_device_type(struct fdt *fdt, struct fdt_node *start, const char *type);
+
+/*
+ * Find a node in the device tree with unit_name equal to "name"
+ * The search will begin on node "start" (exclusive)
+ * or if "start" is NULL, the first node in the FDT (inclusive)
+ *
+ * TODO: THIS IS NOT CORRECT YET
+ *       really to be useful, we should only compare "name" to the part of the string before "@",
+ *       which we currently don't do.
+ */
+struct fdt_node * fdt_find_node_by_unit_name(struct fdt *fdt, struct fdt_node *start, const char *name);
 
 /*
  * Returns true if "node" is compatible with "compat", else false

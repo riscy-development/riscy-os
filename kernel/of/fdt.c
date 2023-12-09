@@ -13,6 +13,21 @@ fdt_struct_ptr_invalid(struct fdt* fdt, void* ptr)
     return false;
 }
 
+static bool
+fdt_memrsv_ptr_invalid(struct fdt* fdt, void* ptr)
+{
+    void* start = ((void*)fdt) + be32toh(fdt->off_mem_rsvmap);
+
+    // We don't actually have a size for the mem_rsvmap,
+    // so we're just going to make sure it doesn't run into the structure block
+    void* end = ((void*)fdt) + be32toh(fdt->off_dt_struct);
+
+    if (ptr < start || ptr >= end) {
+        return true;
+    }
+    return false;
+}
+
 static uint32_t*
 fdt_token_begin(struct fdt* fdt)
 {
@@ -115,25 +130,48 @@ fdt_size(struct fdt* fdt)
     return (size_t)be32toh(fdt->totalsize);
 }
 
-struct fdt_reserve_entry *
-fdt_reserve_entry_begin(struct fdt *fdt) 
-{ 
-    struct fdt_reserve_entry *entry = (struct fdt_reserve_entry*)(((void*)fdt) + be32toh(fdt->off_mem_rsvmap));
+int
+fdt_max_depth(struct fdt* fdt)
+{
+    int depth = 0;
+    int max_depth = depth;
 
-    if(entry->address == NULL && entry->size == NULL) {
-      return NULL;
+    struct fdt_node* node = fdt_node_begin(fdt);
+    while (node != NULL) {
+        max_depth = depth > max_depth ? depth : max_depth;
+        node = fdt_next_node(fdt, node, &depth);
+    }
+
+    return max_depth;
+}
+
+struct fdt_reserve_entry*
+fdt_reserve_entry_begin(struct fdt* fdt)
+{
+    struct fdt_reserve_entry* entry =
+        (struct fdt_reserve_entry*)(((void*)fdt) + be32toh(fdt->off_mem_rsvmap));
+
+    if (entry->address == NULL && entry->size == NULL) {
+        return NULL;
     }
 
     return entry;
 }
 
-struct fdt_reserve_entry *
-fdt_next_reserve_entry(struct fdt *fdt, struct fdt_reserve_entry *entry)
+struct fdt_reserve_entry*
+fdt_next_reserve_entry(struct fdt* fdt, struct fdt_reserve_entry* entry)
 {
     entry = (struct fdt_reserve_entry*)(((void*)entry) + 16ull);
+    void* final_byte_of_entry = (void*)entry + 15ull;
 
-    if(entry->address == NULL && entry->size == NULL) {
-      return NULL;
+    // Make sure we don't run off the end of the region
+    // (Shouldn't happen unless the FDT gets corrupted)
+    if (fdt_memrsv_ptr_invalid(fdt, final_byte_of_entry)) {
+        return NULL;
+    }
+
+    if (entry->address == NULL && entry->size == NULL) {
+        return NULL;
     }
 
     return entry;
@@ -172,12 +210,20 @@ fdt_node_begin(struct fdt* fdt)
 }
 
 struct fdt_node*
-fdt_next_node(struct fdt* fdt, struct fdt_node* node)
+fdt_next_node(struct fdt* fdt, struct fdt_node* node, int* depth)
 {
     uint32_t* token_ptr = fdt_next_token(fdt, (uint32_t*)node);
+    int depth_increase = 1; // The maximum our depth can go up at once
     while (token_ptr != NULL) {
         uint32_t token = be32toh(*token_ptr);
+        if (token == FDT_END_NODE) {
+            // If we hit the end of a node, our depth must go down
+            depth_increase--;
+        }
         if (token == FDT_BEGIN_NODE) {
+            if (depth != NULL) {
+                *depth += depth_increase;
+            }
             return (struct fdt_node*)token_ptr;
         }
         token_ptr = fdt_next_token(fdt, token_ptr);
@@ -288,6 +334,43 @@ fdt_node_next_subnode(struct fdt* fdt, struct fdt_node* subnode)
     return NULL;
 }
 
+size_t
+fdt_node_get_parents(
+    struct fdt* fdt,
+    struct fdt_node* node,
+    struct fdt_node* parents[],
+    size_t parents_len
+)
+{
+    // We can only traverse the FLAT device tree in forward order, so this is gonna be
+    // painful (Also a big reason we want to unflatten the tree ASAP once we have memory
+    // allocation)
+
+    int max_depth = fdt_max_depth(fdt);
+    struct fdt_node* curr_branch[max_depth + 1]; // C99 feature
+
+    int depth = 0;
+    struct fdt_node* curr = fdt_node_begin(fdt);
+    while (curr != NULL) {
+        if (curr == node) {
+            break;
+        }
+        curr_branch[depth] = curr;
+        curr = fdt_next_node(fdt, curr, &depth);
+    }
+
+    // min(parents_len,depth)
+    size_t num_to_return = parents_len < (size_t)depth ? parents_len : (size_t)depth;
+
+    // Copy over as much of the branch as we can into the return array
+    // (flipping the order so parents[0] = the direct ancestor of "node"
+    for (size_t i = 0; i < num_to_return; i++) {
+        parents[i] = curr_branch[depth - (int)(i + 1)];
+    }
+
+    return num_to_return;
+}
+
 const char*
 fdt_string_from_offset(struct fdt* fdt, size_t offset)
 {
@@ -309,7 +392,13 @@ fdt_string_from_offset(struct fdt* fdt, size_t offset)
 const char*
 fdt_node_name(struct fdt_node* node)
 {
+#ifndef FDT_DEBUG_DEBUG_NAMELESS_NODES
     return node->unit_name;
+#else
+    // If the first character is the terminator, replace it with a debug name
+    // NOTE: different nodes can appear to have the same name with this scheme
+    return *(char*)node->unit_name != '\0' ? node->unit_name : "{DEBUG: Nameless Node}";
+#endif
 }
 
 const char*
@@ -373,7 +462,7 @@ fdt_find_compatible_node(struct fdt* fdt, struct fdt_node* start, const char* co
 {
     struct fdt_node* node;
     if (start != NULL) {
-        node = fdt_next_node(fdt, start);
+        node = fdt_next_node(fdt, start, NULL);
     }
     else {
         node = fdt_node_begin(fdt);
@@ -383,7 +472,56 @@ fdt_find_compatible_node(struct fdt* fdt, struct fdt_node* start, const char* co
         if (fdt_node_is_compatible(fdt, node, compat)) {
             return node;
         }
-        node = fdt_next_node(fdt, node);
+        node = fdt_next_node(fdt, node, NULL);
+    }
+
+    return NULL;
+}
+
+struct fdt_node*
+fdt_find_node_by_device_type(struct fdt* fdt, struct fdt_node* start, const char* type)
+{
+    struct fdt_node* node;
+    if (start != NULL) {
+        node = fdt_next_node(fdt, start, NULL);
+    }
+    else {
+        node = fdt_node_begin(fdt);
+    }
+
+    size_t len = (size_t)strlen(type);
+    while (node != NULL) {
+        struct fdt_prop* prop = fdt_get_prop_by_name(fdt, node, NULL, "device_type");
+        if (prop) {
+            size_t prop_len = fdt_prop_val_len(prop);
+            if (prop_len == len + 1) {
+                if (memcmp(type, prop, prop_len) == 0) {
+                    return node;
+                }
+            }
+        }
+        node = fdt_next_node(fdt, node, NULL);
+    }
+
+    return NULL;
+}
+
+struct fdt_node*
+fdt_find_node_by_unit_name(struct fdt* fdt, struct fdt_node* start, const char* name)
+{
+    struct fdt_node* node;
+    if (start != NULL) {
+        node = fdt_next_node(fdt, start, NULL);
+    }
+    else {
+        node = fdt_node_begin(fdt);
+    }
+
+    while (node != NULL) {
+        if (strcmp(name, fdt_node_name(node)) == 0) {
+            return node;
+        }
+        node = fdt_next_node(fdt, node, NULL);
     }
 
     return NULL;
