@@ -108,7 +108,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
     printk("FOODBADD = %p\n", (void*)0xf00dbadd);
 
     // Testing FDT functions
-    struct fdt_node* node = fdt_find_node_by_unit_name(fdt, NULL, "cpu-map");
+    struct fdt_node* node = fdt_find_node_by_device_type(fdt, NULL, "memory");
     if (node == NULL) {
         printk("Could not find node!\n");
     }

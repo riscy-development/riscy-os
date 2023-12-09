@@ -241,6 +241,20 @@ size_t fdt_prop_num_cells(struct fdt_prop *prop);
  */
 uint32_t fdt_prop_get_cell(struct fdt_prop *prop, size_t index);
 
+/*
+ * Returns the number of register blocks in the "reg" property of this node (0 if there is no reg property)
+ */
+size_t fdt_node_num_register_blocks(struct fdt *fdt, struct fdt_node *node);
+
+
+/*
+ * Reads the "reg" property using "#address-cells" and "#size-cells",
+ * Set's "address" and "size" accordingly
+ *
+ * If an error occurs, "size" is set to zero.
+ */
+void fdt_node_get_register_block(struct fdt *fdt, struct fdt_node *node, size_t index, void ** address, size_t * size);
+
 #ifdef __cplusplus
 }
 #endif

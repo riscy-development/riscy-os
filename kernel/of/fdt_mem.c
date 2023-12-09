@@ -1,5 +1,6 @@
 
 #include <kernel/of/fdt_mem.h>
+#include <stdio.h>
 
 // Try to free this region (return the number of bytes successfully freed)
 static size_t
@@ -66,6 +67,10 @@ fdt_boot_mem_init(struct fdt* fdt)
     struct fdt_node* mem_node = fdt_find_node_by_device_type(fdt, NULL, "memory");
     while (mem_node != NULL) {
         // TODO: Actually free memory
+        void *address;
+        size_t size;
+        fdt_node_get_register_block(fdt,mem_node,0,&address,&size);
+        printk("memory_node: {addr = %p, size = %p}\n", (void*)address, (void*)(uintptr_t)size);
         mem_node = fdt_find_node_by_device_type(fdt, mem_node, "memory");
     }
     return KERR_SUCCESS;

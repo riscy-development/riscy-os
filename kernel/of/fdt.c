@@ -511,13 +511,15 @@ fdt_find_node_by_device_type(struct fdt* fdt, struct fdt_node* start, const char
     size_t len = (size_t)strlen(type);
     while (node != NULL) {
         struct fdt_prop* prop = fdt_get_prop_by_name(fdt, node, NULL, "device_type");
-        if (prop) {
+        if (prop != NULL) {
             size_t prop_len = fdt_prop_val_len(prop);
-            if (prop_len == len + 1) {
-                if (memcmp(type, prop, prop_len) == 0) {
-                    return node;
-                }
-            }
+            void *prop_val = fdt_prop_val(prop);
+            // Consider equal even if '\0' is omitted in the property
+            if (prop_len == len+1 || prop_len == len) {
+              if(memcmp(type, prop_val, prop_len) == 0) {
+                return node;
+              }
+            }  
         }
         node = fdt_next_node(fdt, node, NULL);
     }
@@ -645,3 +647,90 @@ fdt_prop_get_cell(struct fdt_prop* prop, size_t index)
     uint32_t* val = fdt_prop_val(prop);
     return be32toh(val[index]);
 }
+
+size_t 
+fdt_node_num_register_blocks(struct fdt *fdt, struct fdt_node *node)
+{
+  struct fdt_prop *reg = fdt_get_prop_by_name(fdt, node, NULL, "reg");
+
+  if(reg == NULL) {
+    return (size_t)0;
+  }
+
+  uint32_t address_cells = fdt_node_get_address_cells(fdt, node);
+  uint32_t size_cells = fdt_node_get_address_cells(fdt, node);
+  uint32_t reg_block_cells = address_cells + size_cells;
+
+  if(reg_block_cells == 0) {
+    return 0;
+  }
+
+  // 4 bytes per cell
+  size_t reg_cell_len = fdt_prop_val_len(reg) >> 2;
+
+  return reg_cell_len / reg_block_cells;
+}
+
+void fdt_node_get_register_block(struct fdt *fdt, struct fdt_node *node, size_t index, void ** address, size_t * size) 
+{
+  struct fdt_prop *reg = fdt_get_prop_by_name(fdt, node, NULL, "reg");
+
+  if(reg == NULL) {
+    goto err_exit;
+  }
+
+  uint32_t address_cells = fdt_node_get_address_cells(fdt, node);
+  uint32_t size_cells = fdt_node_get_address_cells(fdt, node);
+  uint32_t reg_block_cells = address_cells + size_cells;
+
+  void *raw_reg = fdt_prop_val(reg);
+  size_t raw_reg_len = fdt_prop_val_len(reg);
+ 
+  // How many bytes do we need "reg" to be so we can access index safely?
+  size_t min_size_for_index = (index * reg_block_cells * 4);
+
+  if(raw_reg_len < min_size_for_index) {
+    goto err_exit;
+  }
+
+  // Get a pointer to the start of the address in the property
+  uint32_t * address_ptr = ((uint32_t*)raw_reg) + (index * reg_block_cells);
+  // Size cells come after address cells
+  uint32_t * size_ptr = address_ptr + address_cells;
+
+  uint32_t msig_cell; // Most significant cell in 64-bit
+  uint32_t lsig_cell; // Least significant cell in 64-bit
+
+  switch(address_cells) {
+    case 1:
+      *address = (void*)(uintptr_t)be32toh(*address_ptr);
+      break;
+    case 2:
+      msig_cell = be32toh(address_ptr[0]);
+      lsig_cell = be32toh(address_ptr[1]);
+      *address = (void*)(((uint64_t)msig_cell << 32) | (uint64_t)lsig_cell);
+      break;
+    default:
+      goto err_exit;
+  }
+
+  switch(size_cells) {
+    case 1:
+      *size = (size_t)be32toh(*size_ptr);
+      break;
+    case 2:
+      msig_cell = be32toh(size_ptr[0]);
+      lsig_cell = be32toh(size_ptr[1]);
+      *size = (size_t)(((uint64_t)msig_cell << 32) | (uint64_t)lsig_cell);
+      break;
+    default:
+      goto err_exit;
+  }
+
+  return;
+err_exit:
+  *address = NULL;
+  *size = (size_t)0;
+  return;
+}
+
