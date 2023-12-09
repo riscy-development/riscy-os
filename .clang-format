@@ -76,25 +76,29 @@ IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Regroup
 IncludeCategories:
-  # Headers in "" with extension.
-  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
+  # Headers in "" from kernel
+  - Regex: '"kernel/([A-Za-z0-9.\Q/-_\E])+"'
     Priority: 1
     CaseSensitive: false
-  # Headers in <> from libraries.
-  - Regex: "^(<(gsl|catch2))"
+  # Headers in "" from drivers
+  - Regex: '"drivers/([A-Za-z0-9.\Q/-_\E])+"'
     Priority: 2
+    CaseSensitive: false
+  # Headers in "" from elsewhere
+  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
+    Priority: 3
     CaseSensitive: false
   # C headers
   - Regex: '<c([A-Za-z0-9\Q/-_\E])+>'
-    Priority: 4
+    Priority: 5
     CaseSensitive: false
   # Headers in <> without extension.
   - Regex: '<([A-Za-z0-9\Q/-_\E])+>'
-    Priority: 5
+    Priority: 6
     CaseSensitive: false
   # Headers in <> with extension.
   - Regex: '<([A-Za-z0-9.\Q/-_\E])+>'
-    Priority: 3
+    Priority: 4
     CaseSensitive: false
 IncludeIsMainRegex: "(Test)?$"
 IncludeIsMainSourceRegex: ""

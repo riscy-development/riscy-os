@@ -1,4 +1,7 @@
-#include <kernel/of/fdt.h>
+#include "kernel/of/fdt.h"
+
+#include "drivers/syscon.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -123,6 +126,15 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
     fdt_dump(fdt);
 
+    // Set up syscon
+    bool syscon_ok = true;
+    kerror_t err = syscon_init(fdt);
+
+    if (err) {
+        puts("Error setting up syscon\n");
+        syscon_ok = false;
+    }
+
     // Testing FDT functions
     struct fdt_node* clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
     if (clint == NULL) {
@@ -146,6 +158,12 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
         if (*UART == '!')
             abort();
+
+        if (syscon_ok && *UART == '^')
+            syscon_reboot();
+
+        if (syscon_ok && *UART == '&')
+            syscon_shutdown();
 
         char old_uart = *UART;
         while (old_uart == *UART)
