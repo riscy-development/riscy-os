@@ -1,5 +1,6 @@
-#include "drivers/syscon.h"
 #include "kernel/of/fdt.h"
+
+#include "drivers/syscon.h"
 
 #include <stdint.h>
 #include <stdlib.h>
