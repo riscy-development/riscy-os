@@ -185,7 +185,7 @@ static void printk_puts(const char *s)
   early_puts(s);
 }
 
-#endif
+#endif /* KERNEL */
 
 int printf(const char *fmt, ...) 
 {
