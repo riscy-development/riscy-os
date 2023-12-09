@@ -1,7 +1,7 @@
 #ifndef __KERNEL_EARLY_OUTPUT_H__
 #define __KERNEL_EARLY_OUTPUT_H__
 
-#include<kernel/error.h>
+#include <kernel/error.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
  *
  * All a driver needs to do is register a "putchar" callback.
  * So it can be done before any of the driver's true dependencies
- * (subsystems like kmalloc, device registration, paging, etc) 
+ * (subsystems like kmalloc, device registration, paging, etc)
  * are up and running.
  */
 
@@ -27,7 +27,7 @@ extern "C" {
  *    KERR_FULL if the maximum number of callbacks have been registered
  *    KERR_EXIST if this callback has already been registered
  */
-kerror_t register_early_putchar(void(*putchar)(char));
+kerror_t register_early_putchar(void (*putchar)(char));
 
 /*
  * Unregisters a "putchar" previously registered by "register_early_putchar"
@@ -36,7 +36,7 @@ kerror_t register_early_putchar(void(*putchar)(char));
  *     KERR_SUCCESS on success
  *     KERR_NO_EXIST if this callback hasn't been registered
  */
-kerror_t unregister_early_putchar(void(*putchar)(char));
+kerror_t unregister_early_putchar(void (*putchar)(char));
 
 /*
  * Outputs a character on all functions registered using "register_early_putchar"
@@ -46,7 +46,7 @@ void early_putchar(char c);
 /*
  * Outputs a string using "early_putchar"
  */
-void early_puts(const char *s);
+void early_puts(const char* s);
 
 #ifdef __cplusplus
 }

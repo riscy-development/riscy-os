@@ -1,8 +1,8 @@
-#include <kernel/of/fdt.h>
 #include <kernel/early_output.h>
+#include <kernel/of/fdt.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /* Init and Fini arrays */
 typedef void (*func_ptr)(void);
@@ -79,7 +79,7 @@ fdt_dump(struct fdt* fdt)
         for (int i = 0; i < depth; i++) {
             printk("\t");
         }
-        printk("%s\n",fdt_node_name(node));
+        printk("%s\n", fdt_node_name(node));
 
         struct fdt_node* subnode = fdt_node_subnode_begin(fdt, node);
         if (subnode) {
@@ -104,7 +104,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
 {
     // Register the callback
     register_early_putchar(dead_simple_uart_putchar);
-    
+
     // Print core ID
     printk("Running on hart (%c)\n", (char)hartid + '0');
 
@@ -119,11 +119,12 @@ kmain(uint64_t hartid, struct fdt* fdt)
     printk("FOODBADD = %p\n", (void*)0xf00dbadd);
 
     // Testing FDT functions
-    struct fdt_node *clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
-    if(clint == NULL) {
-      printk("Could not find the CLINT!\n");
-    } else {
-      printk("Found the CLINT! (%s)\n", fdt_node_name(clint));
+    struct fdt_node* clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
+    if (clint == NULL) {
+        printk("Could not find the CLINT!\n");
+    }
+    else {
+        printk("Found the CLINT! (%s)\n", fdt_node_name(clint));
     }
 
     // Call global ctors
