@@ -95,11 +95,11 @@ typedef int wchar_t;
  */
 #ifdef __GNUC__
 /* NOLINTNEXTLINE(readability-identifier-naming) */
-#    define offsetof(__TYPE, __MEMBER) __builtin_offsetof(__TYPE, __MEMBER)
+#  define offsetof(__TYPE, __MEMBER) __builtin_offsetof(__TYPE, __MEMBER)
 #else
 /* https://en.wikipedia.org/wiki/Offsetof */
 /* NOLINTNEXTLINE(readability-identifier-naming) */
-#    define offsetof(__TYPE, __MEMBER) ((size_t) & (((__TYPE*)0)->__MEMBER))
+#  define offsetof(__TYPE, __MEMBER) ((size_t) & (((__TYPE*)0)->__MEMBER))
 #endif
 
 /**
@@ -108,11 +108,11 @@ typedef int wchar_t;
  * Tells the compiler this code cannot be reached.
  */
 #if defined(__GNUC__) || defined(__clang__)
-#    define unreachable() __builtin_unreachable() /* NOLINT */
+#  define unreachable() __builtin_unreachable() /* NOLINT */
 #elif defined(_MSC_VER)
-#    define unreachable() __assume(false)
+#  define unreachable() __assume(false)
 #else
-#    warning Unknown compiler, cannot define unreachable.
+#  warning Unknown compiler, cannot define unreachable.
 #endif
 
 #ifdef __cplusplus
