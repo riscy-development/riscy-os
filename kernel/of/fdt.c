@@ -361,6 +361,11 @@ fdt_node_get_parents(
     // allocation)
 
     int max_depth = fdt_max_depth(fdt);
+    if (max_depth < 0) {
+        // Corrupted FDT
+        return 0;
+    }
+
     struct fdt_node* curr_branch[max_depth + 1]; // C99 feature
 
     int depth = 0;
@@ -539,4 +544,104 @@ fdt_find_node_by_unit_name(struct fdt* fdt, struct fdt_node* start, const char* 
     }
 
     return NULL;
+}
+
+struct fdt_prop*
+fdt_node_get_inherited_prop(
+    struct fdt* fdt, struct fdt_node* node, const char* prop_name
+)
+{
+    struct fdt_prop* prop = fdt_get_prop_by_name(fdt, node, NULL, prop_name);
+    if (prop != NULL) {
+        return prop;
+    }
+
+    int max_depth = fdt_max_depth(fdt);
+    if (max_depth < 0) {
+        // Corrupted FDT
+        return NULL;
+    }
+
+    struct fdt_node* parents[max_depth];
+
+    size_t num_parents = fdt_node_get_parents(fdt, node, parents, (size_t)max_depth);
+    for (size_t i = 0; i < num_parents; i++) {
+        prop = fdt_get_prop_by_name(fdt, parents[i], NULL, prop_name);
+        if (prop != NULL) {
+            return prop;
+        }
+    }
+
+    return NULL;
+}
+
+uint32_t
+fdt_node_get_address_cells(struct fdt* fdt, struct fdt_node* node)
+{
+    struct fdt_prop* prop = fdt_node_get_inherited_prop(fdt, node, "#address-cells");
+
+    if (prop == NULL) {
+        // Not in the standard but Linux allows it
+        // so people do it.
+        return 2;
+    }
+
+    size_t num_cells = fdt_prop_num_cells(prop);
+    if (num_cells == 0) {
+        // This should never happen (Corrupted FDT)
+        // TODO: log warning
+        return (uint32_t)0;
+    }
+
+    if (num_cells > 1) {
+        // TODO: log a warning (this is unexpected)
+        //                     (not panic worthy though)
+    }
+
+    return fdt_prop_get_cell(prop, 0);
+}
+
+uint32_t
+fdt_node_get_size_cells(struct fdt* fdt, struct fdt_node* node)
+{
+    struct fdt_prop* prop = fdt_node_get_inherited_prop(fdt, node, "#size-cells");
+
+    if (prop == NULL) {
+        // Linux default
+        return 2;
+    }
+
+    size_t num_cells = fdt_prop_num_cells(prop);
+    if (num_cells == 0) {
+        // This should never happen (Corrupted FDT)
+        // TODO: log warning
+        return (uint32_t)0;
+    }
+
+    if (num_cells > 1) {
+        // TODO: log a warning (this is unexpected)
+        //                     (not panic worthy though)
+    }
+
+    return fdt_prop_get_cell(prop, 0);
+}
+
+size_t
+fdt_prop_num_cells(struct fdt_prop* prop)
+{
+    return fdt_prop_val_len(prop) >> 2;
+}
+
+uint32_t
+fdt_prop_get_cell(struct fdt_prop* prop, size_t index)
+{
+    size_t num_cells = fdt_prop_num_cells(prop);
+    if (index >= num_cells) {
+        // Out of Bounds (Someone Goofed)
+        // TODO: log a warning
+        return 0;
+    }
+
+    uint32_t* val = fdt_prop_val(prop);
+    return be32toh(val[index]);
 }

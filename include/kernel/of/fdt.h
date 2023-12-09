@@ -212,6 +212,35 @@ struct fdt_node * fdt_find_node_by_unit_name(struct fdt *fdt, struct fdt_node *s
  */
 bool fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat); 
 
+/*
+ * Returns the closest definition of property "prop_name",
+ * first checking the node itself, and then going to it's parent, grandparent, etc.
+ *
+ * Returns NULL if none are found.
+ */
+struct fdt_prop * fdt_node_get_inherited_prop(struct fdt *fdt, struct fdt_node *node, const char *prop_name);
+
+/*
+ * Returns the #address-cells inherited property for this node
+ */
+uint32_t fdt_node_get_address_cells(struct fdt *fdt, struct fdt_node *node);
+
+/*
+ * Returns the #size-cells inherited property for this node
+ */
+uint32_t fdt_node_get_address_cells(struct fdt *fdt, struct fdt_node *node);
+
+/*
+ * Assumes this property contains an array of cells (u32's) and returns how many cells long it is
+ */
+size_t fdt_prop_num_cells(struct fdt_prop *prop);
+
+/*
+ * Assumes this property contains an array of cells (u32's) and returns the cell at index 
+ *.
+ */
+uint32_t fdt_prop_get_cell(struct fdt_prop *prop, size_t index);
+
 #ifdef __cplusplus
 }
 #endif
