@@ -115,6 +115,30 @@ fdt_size(struct fdt* fdt)
     return (size_t)be32toh(fdt->totalsize);
 }
 
+struct fdt_reserve_entry *
+fdt_reserve_entry_begin(struct fdt *fdt) 
+{ 
+    struct fdt_reserve_entry *entry = (struct fdt_reserve_entry*)(((void*)fdt) + be32toh(fdt->off_mem_rsvmap));
+
+    if(entry->address == NULL && entry->size == NULL) {
+      return NULL;
+    }
+
+    return entry;
+}
+
+struct fdt_reserve_entry *
+fdt_next_reserve_entry(struct fdt *fdt, struct fdt_reserve_entry *entry)
+{
+    entry = (struct fdt_reserve_entry*)(((void*)entry) + 16ull);
+
+    if(entry->address == NULL && entry->size == NULL) {
+      return NULL;
+    }
+
+    return entry;
+}
+
 size_t
 fdt_prop_val_len(struct fdt_prop* prop)
 {

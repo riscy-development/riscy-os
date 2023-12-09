@@ -35,6 +35,11 @@ struct fdt_prop {
     uint8_t val[];
 };
 
+struct fdt_reserve_entry {
+    uint64_t address;
+    uint64_t size;
+};
+
 #define FDT_HEADER_MAGIC 0xd00dfeed
 
 #define FDT_BEGIN_NODE 0x1
@@ -64,6 +69,16 @@ enum fdt_error fdt_verify(struct fdt *fdt);
  * Get the size of this FDT in bytes
  */
 size_t fdt_size(struct fdt *fdt);
+
+/*
+ * Get the first FDT reserve_entry (or NULL if there are none)
+ */
+struct fdt_reserve_entry * fdt_reserve_entry_begin(struct fdt *fdt);
+
+/*
+ * Returns the next reserve_entry in the FDT (or NULL)
+ */
+struct fdt_reserve_entry * fdt_next_reserve_entry(struct fdt *fdt, struct fdt_reserve_entry *entry);
 
 /*
  * Get the length of the value of this property in bytes
