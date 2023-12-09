@@ -1,5 +1,6 @@
 #include "stddef.h"
 #include "stdlib.h"
+#include "stdio.h"
 
 #ifdef KERNEL
 #  include <print.h>
@@ -9,9 +10,9 @@
 abort()
 {
 #ifdef KERNEL
-    early_puts("KERNEL PANIC");
+    printk("KERNEL PANIC\n");
 #else
-/* TODO print something */
+    printf("ABORT\n");
 #endif
 
     for (;;) {} /* loop forever */
