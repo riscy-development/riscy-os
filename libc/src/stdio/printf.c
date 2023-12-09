@@ -138,7 +138,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
       }
     }
 
-    else if(!escaped && *fmt != '\0') {
+    else if(*fmt != '\0') {
       if(*fmt == '%') {
         escaped = true;
       } else {
