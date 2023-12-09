@@ -1,6 +1,6 @@
 #include "stddef.h"
-#include "stdlib.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 #ifdef KERNEL
 #  include <print.h>

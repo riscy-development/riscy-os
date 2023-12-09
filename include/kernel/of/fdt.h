@@ -37,89 +37,88 @@ struct fdt_prop {
 
 #define FDT_HEADER_MAGIC 0xd00dfeed
 
-#define FDT_BEGIN_NODE 0x1
-#define FDT_END_NODE 0x2
-#define FDT_PROP 0x3
-#define FDT_NOP 0x4
-#define FDT_END 0x9
+#define FDT_BEGIN_NODE   0x1
+#define FDT_END_NODE     0x2
+#define FDT_PROP         0x3
+#define FDT_NOP          0x4
+#define FDT_END          0x9
 
 /* --------------------
  *  CORE FUNCTIONALITY
  * -------------------- */
 
-enum fdt_error 
-{
-  FDT_VALID,
-  
-  FDT_BAD_MAGIC,
-  FDT_INCOMPATIBLE,
+enum fdt_error {
+    FDT_VALID,
+
+    FDT_BAD_MAGIC,
+    FDT_INCOMPATIBLE,
 };
 
 /*
  * Make sure that this FDT is both Valid, and a version which we are equipped to parse
  */
-enum fdt_error fdt_verify(struct fdt *fdt);
+enum fdt_error fdt_verify(struct fdt* fdt);
 
 /*
  * Get the size of this FDT in bytes
  */
-size_t fdt_size(struct fdt *fdt);
+size_t fdt_size(struct fdt* fdt);
 
 /*
  * Get the length of the value of this property in bytes
  */
-size_t fdt_prop_val_len(struct fdt_prop *prop);
+size_t fdt_prop_val_len(struct fdt_prop* prop);
 
 /*
  * Get the raw data of this property
  */
-void * fdt_prop_val(struct fdt_prop *prop);
+void* fdt_prop_val(struct fdt_prop* prop);
 
 /*
  * Get the offset into the string block with the name of this property
  */
-size_t fdt_prop_name_offset(struct fdt_prop *prop);
+size_t fdt_prop_name_offset(struct fdt_prop* prop);
 
 /*
  * Get the first node in the entire FDT
  */
-struct fdt_node * fdt_node_begin(struct fdt *fdt);
+struct fdt_node* fdt_node_begin(struct fdt* fdt);
 
 /*
- * Returns the next node in the tree (or NULL) traversing the entire tree regardless of depth
+ * Returns the next node in the tree (or NULL) traversing the entire tree regardless of
+ * depth
  */
-struct fdt_node * fdt_next_node(struct fdt *fdt, struct fdt_node *node);
+struct fdt_node* fdt_next_node(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Returns the first property in this node (or NULL if there are none)
  */
-struct fdt_prop * fdt_node_prop_begin(struct fdt *fdt, struct fdt_node *node);
+struct fdt_prop* fdt_node_prop_begin(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Returns the next property after this one in the same node (or NULL)
  */
-struct fdt_prop * fdt_node_next_prop(struct fdt *fdt, struct fdt_prop *prop);
+struct fdt_prop* fdt_node_next_prop(struct fdt* fdt, struct fdt_prop* prop);
 
 /*
  * Returns the first subnode of this node (or NULL if there are none)
  */
-struct fdt_node * fdt_node_subnode_begin(struct fdt *fdt, struct fdt_node *node);
+struct fdt_node* fdt_node_subnode_begin(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Returns the next subnode after this one (or NULL)
  */
-struct fdt_node * fdt_node_next_subnode(struct fdt *fdt, struct fdt_node *subnode);
+struct fdt_node* fdt_node_next_subnode(struct fdt* fdt, struct fdt_node* subnode);
 
 /*
  * Get the string at offset "offset" in the string block
  */
-const char * fdt_string_from_offset(struct fdt *fdt, size_t offset);
+const char* fdt_string_from_offset(struct fdt* fdt, size_t offset);
 
 /*
  * Get the string representing the unit name of this node
  */
-const char * fdt_node_name(struct fdt_node *node);
-
+const char* fdt_node_name(struct fdt_node* node);
 
 /* ------------------
  *  HELPER FUNCTIONS
@@ -128,26 +127,29 @@ const char * fdt_node_name(struct fdt_node *node);
 /*
  * Get the string representing the name of this property
  */
-const char * fdt_prop_name(struct fdt *fdt, struct fdt_prop *prop);
+const char* fdt_prop_name(struct fdt* fdt, struct fdt_prop* prop);
 
 /*
  * Find a property in "node" named "name" (or NULL if none exist)
  * The search will begin on property "start" (exclusive)
  * or if "start" is NULL, the first property in the node (inclusive)
  */
-struct fdt_prop * fdt_get_prop_by_name(struct fdt *fdt, struct fdt_node *node, struct fdt_prop *start, const char *name);
+struct fdt_prop* fdt_get_prop_by_name(
+    struct fdt* fdt, struct fdt_node* node, struct fdt_prop* start, const char* name
+);
 
 /*
  * Find a node in the device tree compatible with "compat"
  * The search will begin on node "start" (exclusive)
  * or if "start" is NULL, the first node in the FDT (inclusive)
  */
-struct fdt_node * fdt_find_compatible_node(struct fdt *fdt, struct fdt_node *start, const char *compat);
+struct fdt_node*
+fdt_find_compatible_node(struct fdt* fdt, struct fdt_node* start, const char* compat);
 
 /*
  * Returns true if "node" is compatible with "compat", else false
  */
-bool fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat); 
+bool fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compat);
 
 #ifdef __cplusplus
 }
