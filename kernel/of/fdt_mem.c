@@ -65,7 +65,7 @@ trim_or_split_around_reserved(
 static size_t
 try_boot_free_region(struct fdt* fdt, void* start, size_t size)
 {
-    // Should be unnecessary (but it's worth checking incase someone messes up)
+    // Should be unnecessary (but it's worth checking in case someone messes up)
     if (size == 0) {
         return (size_t)0;
     }
