@@ -116,18 +116,18 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           num_chars += 1;
           escaped = false;
           break;
-        case 's':
+        case 's': /* %s */
           s = (char*)va_arg(args,char*);
           (*puts)(s);
           num_chars += (int)strlen(s);
           escaped = false;
           break;
-        case 'p':
+        case 'p': /* %p */
           p = (void*)va_arg(args,void*);
           num_chars += pointer_print(puts,p);
           escaped = false;
           break;
-        default:
+        default: /* unknown specifier */
           buf[0] = '%';
           buf[1] = *fmt;
           buf[2] = '\0';
@@ -138,7 +138,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
       }
     }
 
-    else if(!escaped && *fmt != '\0') {
+    else if(*fmt != '\0') {
       if(*fmt == '%') {
         escaped = true;
       } else {
