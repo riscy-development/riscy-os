@@ -38,13 +38,16 @@ kernel: | toolchain $(BUILD_SCRIPT)
 	ninja -C build install
 
 # Run
-.PHONY: run format cloc
+.PHONY: run format cloc spellcheck
 
 run: kernel
 	scripts/run.sh
 
 format:
 	scripts/format.sh
+
+spellcheck:
+	codespell
 
 cloc:
 	@scc --exclude-dir 'toolchain/' --exclude-dir 'tools/'

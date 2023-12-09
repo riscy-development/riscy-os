@@ -69,7 +69,8 @@ bar(void)
 
 // Only in kernel.c until we get a framework for output setup
 static void
-fdt_dump(struct fdt* fdt) {
+fdt_dump(struct fdt* fdt)
+{
     struct fdt_node* node = fdt_node_begin(fdt);
     int depth = 1;
 
