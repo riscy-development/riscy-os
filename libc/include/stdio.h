@@ -7,10 +7,10 @@ extern "C" {
 
 #warning stdio.h is incomplete, please be wary when using.
 
-int printf(const char *fmt, ...);
+int printf(const char* fmt, ...);
 
 #ifdef KERNEL
-#define printk(...) printf(__VA_ARGS__)
+#  define printk(...) printf(__VA_ARGS__)
 #endif
 
 #ifdef __cplusplus

@@ -19,7 +19,7 @@ extern "C" {
 [[noreturn]] void abort();
 
 #ifdef KERNEL
-#define kernel_panic() abort()
+#  define kernel_panic() abort()
 #endif
 
 #if 0 /* NOLINT: TODO */

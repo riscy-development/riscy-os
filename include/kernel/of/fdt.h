@@ -46,104 +46,105 @@ struct fdt_reserve_entry {
 
 #define FDT_HEADER_MAGIC 0xd00dfeed
 
-#define FDT_BEGIN_NODE 0x1
-#define FDT_END_NODE 0x2
-#define FDT_PROP 0x3
-#define FDT_NOP 0x4
-#define FDT_END 0x9
+#define FDT_BEGIN_NODE   0x1
+#define FDT_END_NODE     0x2
+#define FDT_PROP         0x3
+#define FDT_NOP          0x4
+#define FDT_END          0x9
 
 /* --------------------
  *  CORE FUNCTIONALITY
  * -------------------- */
 
-enum fdt_error 
-{
-  FDT_VALID,
-  
-  FDT_BAD_MAGIC,
-  FDT_INCOMPATIBLE,
+enum fdt_error {
+    FDT_VALID,
+
+    FDT_BAD_MAGIC,
+    FDT_INCOMPATIBLE,
 };
 
 /*
  * Make sure that this FDT is both Valid, and a version which we are equipped to parse
  */
-enum fdt_error fdt_verify(struct fdt *fdt);
+enum fdt_error fdt_verify(struct fdt* fdt);
 
 /*
  * Get the size of this FDT in bytes
  */
-size_t fdt_size(struct fdt *fdt);
+size_t fdt_size(struct fdt* fdt);
 
 /*
  * Get the maximum depth of this FDT
  * where a "root" node is at depth 0 and subnodes increase the depth by 1
  */
-int fdt_max_depth(struct fdt *fdt);
+int fdt_max_depth(struct fdt* fdt);
 
 /*
  * Get the first FDT reserve_entry (or NULL if there are none)
  */
-struct fdt_reserve_entry * fdt_reserve_entry_begin(struct fdt *fdt);
+struct fdt_reserve_entry* fdt_reserve_entry_begin(struct fdt* fdt);
 
 /*
  * Returns the next reserve_entry in the FDT (or NULL)
  */
-struct fdt_reserve_entry * fdt_next_reserve_entry(struct fdt *fdt, struct fdt_reserve_entry *entry);
+struct fdt_reserve_entry*
+fdt_next_reserve_entry(struct fdt* fdt, struct fdt_reserve_entry* entry);
 
 /*
  * Get the base address of this reserve entry
  */
-void * fdt_reserve_entry_address(struct fdt_reserve_entry *entry);
+void* fdt_reserve_entry_address(struct fdt_reserve_entry* entry);
 
 /*
  * Get the size in bytes of this reserve entry
  */
-size_t fdt_reserve_entry_size(struct fdt_reserve_entry *entry);
+size_t fdt_reserve_entry_size(struct fdt_reserve_entry* entry);
 
 /*
  * Get the length of the value of this property in bytes
  */
-size_t fdt_prop_val_len(struct fdt_prop *prop);
+size_t fdt_prop_val_len(struct fdt_prop* prop);
 
 /*
  * Get the raw data of this property
  */
-void * fdt_prop_val(struct fdt_prop *prop);
+void* fdt_prop_val(struct fdt_prop* prop);
 
 /*
  * Get the offset into the string block with the name of this property
  */
-size_t fdt_prop_name_offset(struct fdt_prop *prop);
+size_t fdt_prop_name_offset(struct fdt_prop* prop);
 
 /*
  * Get the first node in the entire FDT
  */
-struct fdt_node * fdt_node_begin(struct fdt *fdt);
+struct fdt_node* fdt_node_begin(struct fdt* fdt);
 
 /*
- * Returns the next node in the tree (or NULL) traversing the entire tree regardless of depth
+ * Returns the next node in the tree (or NULL) traversing the entire tree regardless of
+ * depth
  */
-struct fdt_node * fdt_next_node(struct fdt *fdt, struct fdt_node *node, int *depth);
+struct fdt_node* fdt_next_node(struct fdt* fdt, struct fdt_node* node, int* depth);
 
 /*
  * Returns the first property in this node (or NULL if there are none)
  */
-struct fdt_prop * fdt_node_prop_begin(struct fdt *fdt, struct fdt_node *node);
+struct fdt_prop* fdt_node_prop_begin(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Returns the next property after this one in the same node (or NULL)
  */
-struct fdt_prop * fdt_node_next_prop(struct fdt *fdt, struct fdt_prop *prop);
+struct fdt_prop* fdt_node_next_prop(struct fdt* fdt, struct fdt_prop* prop);
 
 /*
  * Returns the first subnode of this node (or NULL if there are none)
  */
-struct fdt_node * fdt_node_subnode_begin(struct fdt *fdt, struct fdt_node *node);
+struct fdt_node* fdt_node_subnode_begin(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Returns the next subnode after this one (or NULL)
  */
-struct fdt_node * fdt_node_next_subnode(struct fdt *fdt, struct fdt_node *subnode);
+struct fdt_node* fdt_node_next_subnode(struct fdt* fdt, struct fdt_node* subnode);
 
 /*
  * Populates the provided array parents, of size parents_size,
@@ -153,18 +154,22 @@ struct fdt_node * fdt_node_next_subnode(struct fdt *fdt, struct fdt_node *subnod
  *
  * "parents" will go from closest ancestor to furthest as the index increases
  */
-size_t fdt_node_get_parents(struct fdt *fdt, struct fdt_node *node, struct fdt_node * parents[], size_t parents_size);
+size_t fdt_node_get_parents(
+    struct fdt* fdt,
+    struct fdt_node* node,
+    struct fdt_node* parents[],
+    size_t parents_size
+);
 
 /*
  * Get the string at offset "offset" in the string block
  */
-const char * fdt_string_from_offset(struct fdt *fdt, size_t offset);
+const char* fdt_string_from_offset(struct fdt* fdt, size_t offset);
 
 /*
  * Get the string representing the unit name of this node
  */
-const char * fdt_node_name(struct fdt_node *node);
-
+const char* fdt_node_name(struct fdt_node* node);
 
 /* ------------------
  *  HELPER FUNCTIONS
@@ -173,28 +178,32 @@ const char * fdt_node_name(struct fdt_node *node);
 /*
  * Get the string representing the name of this property
  */
-const char * fdt_prop_name(struct fdt *fdt, struct fdt_prop *prop);
+const char* fdt_prop_name(struct fdt* fdt, struct fdt_prop* prop);
 
 /*
  * Find a property in "node" named "name" (or NULL if none exist)
  * The search will begin on property "start" (exclusive)
  * or if "start" is NULL, the first property in the node (inclusive)
  */
-struct fdt_prop * fdt_get_prop_by_name(struct fdt *fdt, struct fdt_node *node, struct fdt_prop *start, const char *name);
+struct fdt_prop* fdt_get_prop_by_name(
+    struct fdt* fdt, struct fdt_node* node, struct fdt_prop* start, const char* name
+);
 
 /*
  * Find a node in the device tree compatible with "compat"
  * The search will begin on node "start" (exclusive)
  * or if "start" is NULL, the first node in the FDT (inclusive)
  */
-struct fdt_node * fdt_find_compatible_node(struct fdt *fdt, struct fdt_node *start, const char *compat);
+struct fdt_node*
+fdt_find_compatible_node(struct fdt* fdt, struct fdt_node* start, const char* compat);
 
 /*
  * Find a node in the device tree with "device_type" equal to "type"
  * The search will begin on node "start" (exclusive)
  * or if "start" is NULL, the first node in the FDT (inclusive)
  */
-struct fdt_node * fdt_find_node_by_device_type(struct fdt *fdt, struct fdt_node *start, const char *type);
+struct fdt_node*
+fdt_find_node_by_device_type(struct fdt* fdt, struct fdt_node* start, const char* type);
 
 /*
  * Find a node in the device tree with unit_name equal to "name"
@@ -202,15 +211,16 @@ struct fdt_node * fdt_find_node_by_device_type(struct fdt *fdt, struct fdt_node 
  * or if "start" is NULL, the first node in the FDT (inclusive)
  *
  * TODO: THIS IS NOT CORRECT YET
- *       really to be useful, we should only compare "name" to the part of the string before "@",
- *       which we currently don't do.
+ *       really to be useful, we should only compare "name" to the part of the string
+ * before "@", which we currently don't do.
  */
-struct fdt_node * fdt_find_node_by_unit_name(struct fdt *fdt, struct fdt_node *start, const char *name);
+struct fdt_node*
+fdt_find_node_by_unit_name(struct fdt* fdt, struct fdt_node* start, const char* name);
 
 /*
  * Returns true if "node" is compatible with "compat", else false
  */
-bool fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *compat); 
+bool fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compat);
 
 /*
  * Returns the closest definition of property "prop_name",
@@ -218,34 +228,38 @@ bool fdt_node_is_compatible(struct fdt *fdt, struct fdt_node *node, const char *
  *
  * Returns NULL if none are found.
  */
-struct fdt_prop * fdt_node_get_inherited_prop(struct fdt *fdt, struct fdt_node *node, const char *prop_name);
+struct fdt_prop* fdt_node_get_inherited_prop(
+    struct fdt* fdt, struct fdt_node* node, const char* prop_name
+);
 
 /*
  * Returns the #address-cells inherited property for this node
  */
-uint32_t fdt_node_get_address_cells(struct fdt *fdt, struct fdt_node *node);
+uint32_t fdt_node_get_address_cells(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Returns the #size-cells inherited property for this node
  */
-uint32_t fdt_node_get_address_cells(struct fdt *fdt, struct fdt_node *node);
+uint32_t fdt_node_get_address_cells(struct fdt* fdt, struct fdt_node* node);
 
 /*
- * Assumes this property contains an array of cells (u32's) and returns how many cells long it is
+ * Assumes this property contains an array of cells (u32's) and returns how many cells
+ * long it is
  */
-size_t fdt_prop_num_cells(struct fdt_prop *prop);
+size_t fdt_prop_num_cells(struct fdt_prop* prop);
 
 /*
- * Assumes this property contains an array of cells (u32's) and returns the cell at index 
+ * Assumes this property contains an array of cells (u32's) and returns the cell at
+ *index
  *.
  */
-uint32_t fdt_prop_get_cell(struct fdt_prop *prop, size_t index);
+uint32_t fdt_prop_get_cell(struct fdt_prop* prop, size_t index);
 
 /*
- * Returns the number of register blocks in the "reg" property of this node (0 if there is no reg property)
+ * Returns the number of register blocks in the "reg" property of this node (0 if there
+ * is no reg property)
  */
-size_t fdt_node_num_register_blocks(struct fdt *fdt, struct fdt_node *node);
-
+size_t fdt_node_num_register_blocks(struct fdt* fdt, struct fdt_node* node);
 
 /*
  * Reads the "reg" property using "#address-cells" and "#size-cells",
@@ -253,7 +267,9 @@ size_t fdt_node_num_register_blocks(struct fdt *fdt, struct fdt_node *node);
  *
  * If an error occurs, "size" is set to zero.
  */
-void fdt_node_get_register_block(struct fdt *fdt, struct fdt_node *node, size_t index, void ** address, size_t * size);
+void fdt_node_get_register_block(
+    struct fdt* fdt, struct fdt_node* node, size_t index, void** address, size_t* size
+);
 
 #ifdef __cplusplus
 }

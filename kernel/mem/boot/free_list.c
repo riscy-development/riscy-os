@@ -1,8 +1,8 @@
 
+#include <assert.h>
 #include <kernel/mem/boot.h>
-#include<stdint.h>
-#include<assert.h>
-#include<stdio.h>
+#include <stdint.h>
+#include <stdio.h>
 
 /*
  * This file implements "boot_alloc" and "boot_free"
@@ -12,21 +12,21 @@
 
 // Doubly-linked list of free regions in physical memory
 struct boot_free_region {
-  struct boot_free_region *next;
-  struct boot_free_region *prev;
-  size_t size;
+    struct boot_free_region* next;
+    struct boot_free_region* prev;
+    size_t size;
 };
 
-//Forward declarations
+// Forward declarations
 /*
  * Get the first (lowest address) region in the free list
  */
-struct boot_free_region * boot_free_list_begin(void);
+struct boot_free_region* boot_free_list_begin(void);
 
 /*
  * Get the next region (next higher address) in the free list (or NULL)
  */
-struct boot_free_region * boot_free_list_next(struct boot_free_region *region);
+struct boot_free_region* boot_free_list_next(struct boot_free_region* region);
 //
 
 // Linked list of free memory regions
@@ -262,18 +262,18 @@ boot_free_list_next(struct boot_free_region* region)
     return (struct boot_free_region*)region->next;
 }
 
-kerror_t boot_mem_dump(void)
+kerror_t
+boot_mem_dump(void)
 {
-  printk("--- BOOT ALLOC FREE REGIONS ---\n");
-  struct boot_free_region *curr = boot_free_list_begin();
-  while(curr != NULL) {
-    void *start = (void*)curr;
-    size_t size = curr->size;
-    void *end = start + size;
-    printk("[%p - %p] size = (%p bytes)\n", start, end, (void*)(uintptr_t)size);
-    curr = boot_free_list_next(curr);
-  }
-  printk("-------------------------------\n");
-  return KERR_SUCCESS;
+    printk("--- BOOT ALLOC FREE REGIONS ---\n");
+    struct boot_free_region* curr = boot_free_list_begin();
+    while (curr != NULL) {
+        void* start = (void*)curr;
+        size_t size = curr->size;
+        void* end = start + size;
+        printk("[%p - %p] size = (%p bytes)\n", start, end, (void*)(uintptr_t)size);
+        curr = boot_free_list_next(curr);
+    }
+    printk("-------------------------------\n");
+    return KERR_SUCCESS;
 }
-

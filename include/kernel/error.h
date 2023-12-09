@@ -1,5 +1,5 @@
-#ifndef __KERNEL_ERROR_H__
-#define __KERNEL_ERROR_H__
+#ifndef __KERNEL__ERROR_H__
+#define __KERNEL__ERROR_H__
 
 /*
  * Defines Common Error Codes which can be used by many different internal kernel API's
