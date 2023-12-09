@@ -127,7 +127,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           num_chars += pointer_print(puts,p);
           escaped = false;
           break;
-        default:
+        default: /* unknown specifier */
           buf[0] = '%';
           buf[1] = *fmt;
           buf[2] = '\0';
