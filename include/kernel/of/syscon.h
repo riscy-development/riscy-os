@@ -6,13 +6,14 @@ extern "C" {
 #endif
 
 #include "kernel/of/fdt.h"
+#include "kernel/error.h"
 
 #include <stdint.h>
 
 /**
  * Init the syscon system.
  */
-void syscon_init(struct fdt* fdt);
+[[nodiscard]] kerror_t syscon_init(struct fdt* fdt);
 
 /**
  * Get the syscon register for our board.

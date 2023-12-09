@@ -124,7 +124,15 @@ kmain(uint64_t hartid, struct fdt* fdt)
     }
 
     fdt_dump(fdt);
-    syscon_init(fdt);
+
+    // Set up syscon
+    bool syscon_ok = true;
+    kerror_t err = syscon_init(fdt);
+
+    if (err) {
+        puts("Error setting up syscon\n");
+        syscon_ok = false;
+    }
 
     // Testing FDT functions
     struct fdt_node* clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
@@ -150,10 +158,10 @@ kmain(uint64_t hartid, struct fdt* fdt)
         if (*UART == '!')
             abort();
 
-        if (*UART == '^')
+        if (syscon_ok && *UART == '^')
             syscon_reboot();
 
-        if (*UART == '&')
+        if (syscon_ok && *UART == '&')
             syscon_shutdown();
 
         char old_uart = *UART;
