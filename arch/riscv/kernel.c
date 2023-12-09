@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <kernel/early_output.h>
+#include <kernel/mem/boot.h>
 #include <kernel/of/fdt.h>
 #include <kernel/of/fdt_mem.h>
-#include <kernel/mem/boot.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -115,7 +115,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
     boot_mem_dump();
 
     // Allocate a page aligned to 16 bytes
-    void *alloc = boot_alloc(0x1000, 4);
+    void* alloc = boot_alloc(0x1000, 4);
     printk("alloc = %p\n", alloc);
 
     boot_mem_dump();
