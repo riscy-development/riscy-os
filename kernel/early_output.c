@@ -16,12 +16,11 @@ kerror_t register_early_putchar(void(*putchar)(char))
     }
   }
 
-  if(index >= 0) {
-    early_putchar_array[index] = putchar;
-    return KERR_SUCCESS;
-  }
-
-  return KERR_FULL;
+  if(index < 0)
+      return KERR_FULL;
+      
+  early_putchar_array[index] = putchar;
+  return KERR_SUCCESS;
 }
 
 kerror_t unregister_early_putchar(void(*putchar)(char)) 
@@ -39,10 +38,11 @@ kerror_t unregister_early_putchar(void(*putchar)(char))
 void early_putchar(char c) 
 {
   for(int i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
-    if(early_putchar_array[i] == NULL) {
-      continue;
-    }
-    (*(early_putchar_array[i]))(c);
+    putchar_t cb = early_putchar_array[i];
+    if (cb == NULL)
+       continue;
+
+    (*cb)(c);
   }
 }
 

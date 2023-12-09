@@ -34,14 +34,15 @@
  *
  * Ignoring modifiers for now
  */
+typedef void (*puts_t)(const char*);
 
 // Prints for "%p" and returns the number of characters printed
-static int pointer_print(void(*puts)(const char*), void *p) 
+static int pointer_print(puts_t puts, void *p) 
 {
   uintptr_t ip = (uintptr_t)p;
   
   // 2 hex digits per byte + 2 digits for "0x" + 1 null terminator
-#define BUF_LEN (sizeof(void*) * 2) + 2 + 1
+  constexpr size_t BUF_LEN = (sizeof(void*) * 2) + 2 + 1;
   char buf[BUF_LEN];
 
   for(int i = BUF_LEN - 2; i > 1; i--) {
@@ -66,12 +67,11 @@ static int pointer_print(void(*puts)(const char*), void *p)
   (*puts)(buf);
  
   return BUF_LEN-1;
-#undef BUF_LEN
 }
 
-static int formatted_print(void(*puts)(const char*), const char *fmt, va_list args) 
+static int formatted_print(puts_t puts, const char *fmt, va_list args) 
 {
-#define BUF_LEN 32
+constexpr size_t BUF_LEN = 32;
 _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
 
   int num_chars = 0;
@@ -85,7 +85,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
   bool escaped = false;
   do 
   {
-    if(escaped) {
+    if(escaped) { /* we found a % */
       // Flush the buffer no matter what
       if(buf_head > 0) {
         buf[buf_head] = '\0';
@@ -102,14 +102,15 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
       switch(*fmt) {
         case '\0':
           // In this case we need to output the final %
-        case '%':
+	[[fallthrough]];
+        case '%': /* %% */
           buf[0] = '%';
           buf[1] = '\0';
           (*puts)(buf);
           num_chars += 1;
           escaped = false;
           break;
-        case 'c':
+        case 'c':  /* %c */
           buf[0] = (char)va_arg(args, int);
           buf[1] = '\0';
           (*puts)(buf);
@@ -172,6 +173,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
 
 void printf_puts(const char *s) {
   // TODO
+  abort();
 }
 
 #ifdef KERNEL
