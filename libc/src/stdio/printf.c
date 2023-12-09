@@ -122,7 +122,7 @@ _Static_assert(BUF_LEN > 2, "formatted_print BUF_LEN too small!");
           num_chars += (int)strlen(s);
           escaped = false;
           break;
-        case 'p':
+        case 'p': /* %p */
           p = (void*)va_arg(args,void*);
           num_chars += pointer_print(puts,p);
           escaped = false;
