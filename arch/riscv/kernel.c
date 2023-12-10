@@ -1,7 +1,7 @@
 #include "kernel/early_output.h"
+#include "kernel/mem/boot.h"
 #include "kernel/of/fdt.h"
 #include "kernel/of/fdt_mem.h"
-#include "kernel/mem/boot.h"
 
 #include "drivers/syscon.h"
 
@@ -131,7 +131,7 @@ kmain(uint64_t hartid, struct fdt* fdt)
         printk("Error setting up syscon\n");
         syscon_ok = false;
     }
-    
+
     // Call global ctors
     preinit();
     init();

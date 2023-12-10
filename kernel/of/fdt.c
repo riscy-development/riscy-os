@@ -548,6 +548,36 @@ fdt_find_node_by_unit_name(struct fdt* fdt, struct fdt_node* start, const char* 
     return NULL;
 }
 
+struct fdt_node*
+fdt_find_node_by_phandle(struct fdt* fdt, struct fdt_node* start, uint32_t phandle)
+{
+    struct fdt_node* node;
+    if (start != NULL) {
+        node = fdt_next_node(fdt, start, NULL);
+    }
+    else {
+        node = fdt_node_begin(fdt);
+    }
+
+    while (node != NULL) {
+        struct fdt_prop* phandle_prop =
+            fdt_get_prop_by_name(fdt, node, NULL, "phandle");
+        if (phandle_prop) {
+            size_t num_cells = fdt_prop_num_cells(phandle_prop);
+            if (num_cells != 1) {
+                // This is an incorrect "phandle" property
+                continue;
+            }
+            if (phandle == fdt_prop_get_cell(phandle_prop, 0)) {
+                return node;
+            }
+        }
+        node = fdt_next_node(fdt, node, NULL);
+    }
+
+    return NULL;
+}
+
 struct fdt_prop*
 fdt_node_get_inherited_prop(
     struct fdt* fdt, struct fdt_node* node, const char* prop_name
