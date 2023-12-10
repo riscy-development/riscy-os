@@ -14,7 +14,8 @@ extern "C" {
 
 #define FDT_COMPAT_VERSION 17
 
-struct fdt {
+struct fdt 
+{
     uint32_t magic;
     uint32_t totalsize;
     uint32_t off_dt_struct;
@@ -25,24 +26,27 @@ struct fdt {
     uint32_t boot_cpuid_phys;
     uint32_t size_dt_strings;
     uint32_t size_dt_struct;
-};
+} __attribute__((packed));
 
-struct fdt_node {
+struct fdt_node 
+{
     uint32_t token;
     char unit_name[];
 };
 
-struct fdt_prop {
+struct fdt_prop 
+{
     uint32_t token;
     uint32_t len;
     uint32_t name_offset;
     uint8_t val[];
-};
+} __attribute__((packed));
 
-struct fdt_reserve_entry {
+struct fdt_reserve_entry 
+{
     uint64_t address;
     uint64_t size;
-};
+} __attribute__((packed));
 
 #define FDT_HEADER_MAGIC 0xd00dfeed
 
