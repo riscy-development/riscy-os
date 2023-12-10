@@ -11,24 +11,26 @@ extern "C" {
 #include <stdint.h>
 
 /**
- * Init the syscon system.
+ * Try to find and initialize a generic "syscon-poweroff" node in the Device Tree.
  */
-[[nodiscard]] kerror_t syscon_init(struct fdt* fdt);
+[[nodiscard]] kerror_t syscon_shutdown_init(struct fdt* fdt);
 
 /**
- * Get the syscon register for our board.
- *
- * @returns The memory address of the syscon register.
+ * Try to find and initialize a generic "syscon-reboot" node in the Device Tree.
  */
-volatile uint32_t* syscon_mmio_register();
+[[nodiscard]] kerror_t syscon_reboot_init(struct fdt* fdt);
 
 /**
  * Shutdown the system.
+ *
+ * Calling this requires "syscon_shutdown_init" has been called and returned KERR_SUCCESS
  */
 [[noreturn]] void syscon_shutdown();
 
 /**
  * Reboot the system.
+ *
+ * Calling this requires "syscon_reboot_init" has been called and returned KERR_SUCCESS
  */
 [[noreturn]] void syscon_reboot();
 
