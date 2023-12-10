@@ -61,7 +61,7 @@ alloc_after(struct boot_free_region* region, size_t size, unsigned int alignment
 {
     uintptr_t end = (uintptr_t)region + region->size;
     // Get how far off from being aligned it is
-    // TODO: (if unalignment > sizeof(struct boot_free_region) 
+    // TODO: (if unalignment > sizeof(struct boot_free_region)
     //        we should split the region in the free list to waste less memory.
     //        This is especially important for page allocations)
     size_t unalignment = (end - size) & ((1ull << alignment) - 1ull);
