@@ -17,8 +17,16 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
 
+// TODO: handle non-64 bit systems
+typedef uint64_t uintptr_t;
+
 /* Checks */
 /* NOLINTBEGIN */
+_Static_assert(
+    sizeof(uintptr_t) == sizeof(void*),
+    "uintptr_t does not have the same size as a pointer!"
+);
+
 _Static_assert(sizeof(int8_t) == 1, "int8_t is not 1 byte!");
 _Static_assert(sizeof(int16_t) == 2, "int16_t is not 2 bytes long!");
 _Static_assert(sizeof(int32_t) == 4, "int32_t is not 4 bytes long!");

@@ -2,10 +2,12 @@
 
 #include "kernel/endian.h"
 #include "kernel/of/fdt.h"
+
 #include "print.h"
 
 #include <assert.h>
 #include <stddef.h>
+#include <stdio.h>
 
 static volatile uint32_t* SYSCON_ADDR = 0; /* NOLINT */
 
@@ -20,9 +22,7 @@ syscon_init(struct fdt* fdt)
     if (!syscon)
         return KERR_NO_EXIST;
 
-    puts("Found syscon at ");
-    puts(fdt_node_name(syscon));
-    putchar('\n');
+    printk("Found syscon (%s)\n", fdt_node_name(syscon));
 
     /* Get the reg property */
     struct fdt_prop* syscon_reg = fdt_get_prop_by_name(fdt, syscon, NULL, "reg");

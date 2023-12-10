@@ -1,6 +1,7 @@
 # Add modules
 add_subdirectory(stdlib)
 add_subdirectory(string)
+add_subdirectory(stdio)
 
 # Propagate upwards
 set(NEW_SOURCES ${LIBC_SOURCES})
