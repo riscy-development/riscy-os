@@ -23,7 +23,8 @@ extern "C" {
 /**
  * Shutdown the system.
  *
- * Calling this requires "syscon_shutdown_init" has been called and returned KERR_SUCCESS
+ * Calling this requires "syscon_shutdown_init" has been called and returned
+ * KERR_SUCCESS
  */
 [[noreturn]] void syscon_shutdown();
 
