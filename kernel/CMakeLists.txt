@@ -47,9 +47,11 @@ list(
 include(cmake/modules.cmake)
 
 add_root_dir("arch/${CONFIG_ARCH_DIR}")  # architecture directory
+add_root_dir("drivers")
+
+# Internal modules
 add_subdirectory("of") # Open Firmware Support
 add_subdirectory("mem") # Memory Framework / Memory Allocators 
-# add_root_dir("drivers")
 
 # ----- Add target -----
 

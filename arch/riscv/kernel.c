@@ -1,8 +1,11 @@
+#include "kernel/early_output.h"
+#include "kernel/of/fdt.h"
+#include "kernel/of/fdt_mem.h"
+#include "kernel/mem/boot.h"
+
+#include "drivers/syscon.h"
+
 #include <assert.h>
-#include <kernel/early_output.h>
-#include <kernel/mem/boot.h>
-#include <kernel/of/fdt.h>
-#include <kernel/of/fdt_mem.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -120,6 +123,15 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
     boot_mem_dump();
 
+    // Set up syscon
+    bool syscon_ok = true;
+    kerror_t err = syscon_init(fdt);
+
+    if (err) {
+        printk("Error setting up syscon\n");
+        syscon_ok = false;
+    }
+    
     // Call global ctors
     preinit();
     init();
@@ -132,6 +144,12 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
         if (*UART == '!')
             abort();
+
+        if (syscon_ok && *UART == '^')
+            syscon_reboot();
+
+        if (syscon_ok && *UART == '&')
+            syscon_shutdown();
 
         char old_uart = *UART;
         while (old_uart == *UART)

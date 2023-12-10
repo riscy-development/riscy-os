@@ -1,0 +1,9 @@
+# Add all drivers
+add_subdirectory(syscon)
+
+# Propagate variables up
+set(NEW_SOURCES ${KERNEL_SOURCES})
+set(KERNEL_SOURCES ${NEW_SOURCES} PARENT_SCOPE)
+
+set(NEW_INCLUDES ${KERNEL_INCLUDE_DIRS})
+set(KERNEL_INCLUDE_DIRS ${NEW_INCLUDES} PARENT_SCOPE)
