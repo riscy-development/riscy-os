@@ -610,7 +610,7 @@ fdt_node_get_size_cells(struct fdt* fdt, struct fdt_node* node)
 
     if (prop == NULL) {
         // Linux default
-        return 2;
+        return 1;
     }
 
     size_t num_cells = fdt_prop_num_cells(prop);
@@ -631,7 +631,7 @@ fdt_node_get_size_cells(struct fdt* fdt, struct fdt_node* node)
 size_t
 fdt_prop_num_cells(struct fdt_prop* prop)
 {
-    return fdt_prop_val_len(prop) >> 2;
+    return fdt_prop_val_len(prop) / sizeof(uint32_t);
 }
 
 uint32_t
@@ -658,15 +658,14 @@ fdt_node_num_register_blocks(struct fdt* fdt, struct fdt_node* node)
     }
 
     uint32_t address_cells = fdt_node_get_address_cells(fdt, node);
-    uint32_t size_cells = fdt_node_get_address_cells(fdt, node);
+    uint32_t size_cells = fdt_node_get_size_cells(fdt, node);
     uint32_t reg_block_cells = address_cells + size_cells;
 
     if (reg_block_cells == 0) {
         return 0;
     }
 
-    // 4 bytes per cell
-    size_t reg_cell_len = fdt_prop_val_len(reg) >> 2;
+    size_t reg_cell_len = fdt_prop_num_cells(reg);
 
     return reg_cell_len / reg_block_cells;
 }
@@ -683,7 +682,7 @@ fdt_node_get_register_block(
     }
 
     uint32_t address_cells = fdt_node_get_address_cells(fdt, node);
-    uint32_t size_cells = fdt_node_get_address_cells(fdt, node);
+    uint32_t size_cells = fdt_node_get_size_cells(fdt, node);
     uint32_t reg_block_cells = address_cells + size_cells;
 
     void* raw_reg = fdt_prop_val(reg);
