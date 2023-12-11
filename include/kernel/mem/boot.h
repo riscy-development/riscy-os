@@ -2,6 +2,7 @@
 #define __KERNEL__MEM_BOOT_H__
 
 #include "kernel/error.h"
+
 #include <stddef.h>
 #include <stdint.h>
 

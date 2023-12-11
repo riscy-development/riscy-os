@@ -1,10 +1,10 @@
 #ifndef __KERNEL_OF_FDT_H__
 #define __KERNEL_OF_FDT_H__
 
+#include "kernel/attribute.h"
+
 #include <stdint.h>
 #include <string.h>
-
-#include "kernel/attribute.h"
 
 #ifdef __cplusplus
 extern "C" {

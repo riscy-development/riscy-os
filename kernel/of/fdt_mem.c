@@ -1,5 +1,6 @@
 
 #include "kernel/of/fdt_mem.h"
+
 #include <stdio.h>
 
 // Helper function which decides how to deal with overlapping reserved regions
@@ -32,7 +33,7 @@ trim_or_split_around_reserved(
             *size_ptr = 0;
             return false;
         }
-        
+
         // Trim from below
         *start_ptr = resv_end;
         *size_ptr = (size_t)(end - resv_end);
