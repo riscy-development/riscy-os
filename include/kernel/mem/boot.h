@@ -1,7 +1,7 @@
-#ifndef __KERNEL_MEM_BOOT_H__
-#define __KERNEL_MEM_BOOT_H__
+#ifndef __KERNEL__MEM_BOOT_H__
+#define __KERNEL__MEM_BOOT_H__
 
-#include <kernel/error.h>
+#include "kernel/error.h"
 #include <stddef.h>
 #include <stdint.h>
 

@@ -11,7 +11,7 @@ extern "C" {
 // Device Tree Version 17 Specification
 // https://devicetree-specification.readthedocs.io/en/stable/flattened-format.html#figure-device-tree-structure
 
-// Bad debugging system (should integrate into Kconfig or delete entirely later)
+// TODO: Bad debugging system (should integrate into Kconfig or delete entirely later)
 #define FDT_DEBUG_DEBUG_NAMELESS_NODES
 //
 
