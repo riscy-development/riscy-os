@@ -66,7 +66,7 @@ if (ok) {
 
 Please use `constexpr` for `c` and `cpp` file constants, now that it exists in C and C++.
 
-For header constants, use `#define` macros.
+For header constants, use `#define` macros or `enum`s.
 
 ## Types
 
