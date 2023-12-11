@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "kernel/attribute.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,7 +30,7 @@ struct fdt {
     uint32_t boot_cpuid_phys;
     uint32_t size_dt_strings;
     uint32_t size_dt_struct;
-} __attribute__((packed));
+} KERNEL_PACKED;
 
 struct fdt_node {
     uint32_t token;
@@ -40,12 +42,12 @@ struct fdt_prop {
     uint32_t len;
     uint32_t name_offset;
     uint8_t val[];
-} __attribute__((packed));
+} KERNEL_PACKED;
 
 struct fdt_reserve_entry {
     uint64_t address;
     uint64_t size;
-} __attribute__((packed));
+} KERNEL_PACKED;
 
 #define FDT_HEADER_MAGIC 0xd00dfeed
 
