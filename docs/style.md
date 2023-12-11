@@ -29,7 +29,7 @@ switch (x) {
 
 ## Formatting
 
-This is handled by `clang-foramt`. Just run `make format` and your code will become pretty.
+This is handled by `clang-format`. Just run `make format` and your code will become pretty.
 
 Some special cases are listed below.
 
