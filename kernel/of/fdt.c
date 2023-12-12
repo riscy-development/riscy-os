@@ -22,10 +22,7 @@ fdt_memrsv_ptr_invalid(struct fdt* fdt, void* ptr)
     // so we're just going to make sure it doesn't run into the structure block
     void* end = ((void*)fdt) + be32toh(fdt->off_dt_struct);
 
-    if (ptr < start || ptr >= end) {
-        return true;
-    }
-    return false;
+    return (ptr < start) || (ptr >= end);
 }
 
 static uint32_t*
@@ -180,15 +177,21 @@ fdt_next_reserve_entry(struct fdt* fdt, struct fdt_reserve_entry* entry)
 void*
 fdt_reserve_entry_address(struct fdt_reserve_entry* entry)
 {
-    // TODO: 32-bit systems should use be32toh
-    return (void*)(uintptr_t)be64toh(entry->address);
+#if CONFIG_64_BIT 
+    return (void*)be64toh(entry->address);
+#else
+    return (void*)be32toh(entry->address);
+#endif
 }
 
 size_t
 fdt_reserve_entry_size(struct fdt_reserve_entry* entry)
 {
-    // TODO: 32-bit systems should use be32toh
+#if CONFIG_64_BIT
     return (size_t)be64toh(entry->size);
+#else
+    return (size_t)be32toh(entry->size);
+#endif
 }
 
 size_t
