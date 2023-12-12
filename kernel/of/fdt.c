@@ -703,21 +703,16 @@ fdt_node_get_register_block(
     }
 
     // Get a pointer to the start of the address in the property
-    uint32_t* address_ptr = ((uint32_t*)raw_reg) + (index * reg_block_cells);
+    void* address_ptr = raw_reg + (index * reg_block_cells);
     // Size cells come after address cells
-    uint32_t* size_ptr = address_ptr + address_cells;
-
-    uint32_t msig_cell; // Most significant cell in 64-bit
-    uint32_t lsig_cell; // Least significant cell in 64-bit
+    void* size_ptr = address_ptr + (address_cells * sizeof(uint32_t));
 
     switch (address_cells) {
         case 1:
-            *address = (void*)(uintptr_t)be32toh(*address_ptr);
+            *address = (void*)(uintptr_t)be32toh(*(uint32_t*)address_ptr);
             break;
         case 2:
-            msig_cell = be32toh(address_ptr[0]);
-            lsig_cell = be32toh(address_ptr[1]);
-            *address = (void*)(((uint64_t)msig_cell << 32) | (uint64_t)lsig_cell);
+            *address = (void*)(uintptr_t)be64toh(*(uint64_t*)address_ptr);
             break;
         default:
             goto err_exit;
@@ -725,12 +720,10 @@ fdt_node_get_register_block(
 
     switch (size_cells) {
         case 1:
-            *size = (size_t)be32toh(*size_ptr);
+            *size = (size_t)(uintptr_t)be32toh(*(uint32_t*)size_ptr);
             break;
         case 2:
-            msig_cell = be32toh(size_ptr[0]);
-            lsig_cell = be32toh(size_ptr[1]);
-            *size = (size_t)(((uint64_t)msig_cell << 32) | (uint64_t)lsig_cell);
+            *size = (size_t)(uintptr_t)be64toh(*(uint64_t*)size_ptr);
             break;
         default:
             goto err_exit;
