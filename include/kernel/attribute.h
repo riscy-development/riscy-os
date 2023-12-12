@@ -14,9 +14,9 @@
 #endif
 
 #ifdef __GNUC__
-#define KERNEL_ALIGNED(b) __attribute__((aligned (b)))
-#else 
-#error "Alignment attribute is not supported!"
+#  define KERNEL_ALIGNED(b) __attribute__((aligned(b)))
+#else
+#  error "Alignment attribute is not supported!"
 #endif
 
 #endif

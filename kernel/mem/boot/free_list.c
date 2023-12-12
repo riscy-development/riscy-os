@@ -50,9 +50,7 @@ alloc_after_unalignment(
 
 // How unaligned is this allocation if we do it before the region
 static size_t
-alloc_before_unalignment(
-    struct boot_free_region* region, size_t size, unsigned int alignment
-)
+alloc_before_unalignment(struct boot_free_region* region, unsigned int alignment)
 {
     void* start = (void*)region;
     return (size_t)(1ull << alignment)
@@ -65,7 +63,6 @@ region_size_alloc_after(
     struct boot_free_region* region, size_t size, unsigned int alignment
 )
 {
-    uintptr_t end = (uintptr_t)region + region->size;
     size_t unalignment = alloc_after_unalignment(region, size, alignment);
     return ((ssize_t)region->size - (ssize_t)(size + unalignment));
 }
@@ -76,15 +73,13 @@ region_size_alloc_before(
     struct boot_free_region* region, size_t size, unsigned int alignment
 )
 {
-    uintptr_t start = (uintptr_t)region;
-    size_t unalignment = alloc_before_unalignment(region, size, alignment);
+    size_t unalignment = alloc_before_unalignment(region, alignment);
     return ((ssize_t)region->size - (ssize_t)(size + unalignment));
 }
 
 static void*
 alloc_after(struct boot_free_region* region, size_t size, unsigned int alignment)
 {
-    uintptr_t end = (uintptr_t)region + region->size;
     // Get how far off from being aligned it is
     // TODO: (if unalignment > sizeof(struct boot_free_region)
     //        we should split the region in the free list to waste less memory.
@@ -113,9 +108,8 @@ alloc_after(struct boot_free_region* region, size_t size, unsigned int alignment
 static void*
 alloc_before(struct boot_free_region* region, size_t size, unsigned int alignment)
 {
-    uintptr_t start = (uintptr_t)region;
     // Get how far off from being aligned it is
-    size_t unalignment = alloc_before_unalignment(region, size, alignment);
+    size_t unalignment = alloc_before_unalignment(region, alignment);
     size_t new_size = region->size - (size + unalignment);
 
     if (new_size < sizeof(struct boot_free_region)) {

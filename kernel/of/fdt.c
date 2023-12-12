@@ -177,7 +177,7 @@ fdt_next_reserve_entry(struct fdt* fdt, struct fdt_reserve_entry* entry)
 void*
 fdt_reserve_entry_address(struct fdt_reserve_entry* entry)
 {
-#if CONFIG_64_BIT 
+#if CONFIG_64_BIT
     return (void*)be64toh(entry->address);
 #else
     return (void*)be32toh(entry->address);
@@ -370,7 +370,7 @@ fdt_node_get_parents(
     }
 
 #ifdef __STD_C_NO_VLA__
-#error "Automatic storage duration VLA's are not supported!"
+#  error "Automatic storage duration VLA's are not supported!"
 #else
     struct fdt_node* curr_branch[max_depth + 1];
 #endif
