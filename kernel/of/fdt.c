@@ -366,7 +366,11 @@ fdt_node_get_parents(
         return 0;
     }
 
-    struct fdt_node* curr_branch[max_depth + 1]; // C99 feature
+#ifdef __STD_C_NO_VLA__
+#error "Automatic storage duration VLA's are not supported!"
+#else
+    struct fdt_node* curr_branch[max_depth + 1];
+#endif
 
     int depth = 0;
     struct fdt_node* curr = fdt_node_begin(fdt);
