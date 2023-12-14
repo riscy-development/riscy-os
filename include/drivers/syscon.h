@@ -26,14 +26,14 @@ extern "C" {
  * Calling this requires "syscon_shutdown_init" has been called and returned
  * KERR_SUCCESS
  */
-[[noreturn]] void syscon_shutdown();
+[[noreturn]] void syscon_shutdown(void);
 
 /**
  * Reboot the system.
  *
  * Calling this requires "syscon_reboot_init" has been called and returned KERR_SUCCESS
  */
-[[noreturn]] void syscon_reboot();
+[[noreturn]] void syscon_reboot(void);
 
 #ifdef __cplusplus
 } /* extern "C" */
