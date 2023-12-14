@@ -22,10 +22,7 @@ fdt_memrsv_ptr_invalid(struct fdt* fdt, void* ptr)
     // so we're just going to make sure it doesn't run into the structure block
     void* end = ((void*)fdt) + be32toh(fdt->off_dt_struct);
 
-    if (ptr < start || ptr >= end) {
-        return true;
-    }
-    return false;
+    return (ptr < start) || (ptr >= end);
 }
 
 static uint32_t*
@@ -180,15 +177,21 @@ fdt_next_reserve_entry(struct fdt* fdt, struct fdt_reserve_entry* entry)
 void*
 fdt_reserve_entry_address(struct fdt_reserve_entry* entry)
 {
-    // TODO: 32-bit systems should use be32toh
-    return (void*)(uintptr_t)be64toh(entry->address);
+#if CONFIG_64_BIT
+    return (void*)be64toh(entry->address);
+#else
+    return (void*)be32toh(entry->address);
+#endif
 }
 
 size_t
 fdt_reserve_entry_size(struct fdt_reserve_entry* entry)
 {
-    // TODO: 32-bit systems should use be32toh
+#if CONFIG_64_BIT
     return (size_t)be64toh(entry->size);
+#else
+    return (size_t)be32toh(entry->size);
+#endif
 }
 
 size_t
@@ -366,7 +369,7 @@ fdt_node_get_parents(
         return 0;
     }
 
-    struct fdt_node* curr_branch[max_depth + 1]; // C99 feature
+    struct fdt_node* curr_branch[max_depth + 1];
 
     int depth = 0;
     struct fdt_node* curr = fdt_node_begin(fdt);
@@ -416,7 +419,7 @@ fdt_node_name(struct fdt_node* node)
 #else
     // If the first character is the terminator, replace it with a debug name
     // NOTE: different nodes can appear to have the same name with this scheme
-    return *(char*)node->unit_name != '\0' ? node->unit_name : "{DEBUG: Nameless Node}";
+    return node->unit_name[0] != '\0' ? node->unit_name : "{DEBUG: Nameless Node}";
 #endif
 }
 
@@ -640,7 +643,7 @@ fdt_node_get_size_cells(struct fdt* fdt, struct fdt_node* node)
 
     if (prop == NULL) {
         // Linux default
-        return 2;
+        return 1;
     }
 
     size_t num_cells = fdt_prop_num_cells(prop);
@@ -661,7 +664,7 @@ fdt_node_get_size_cells(struct fdt* fdt, struct fdt_node* node)
 size_t
 fdt_prop_num_cells(struct fdt_prop* prop)
 {
-    return fdt_prop_val_len(prop) >> 2;
+    return fdt_prop_val_len(prop) / sizeof(uint32_t);
 }
 
 uint32_t
@@ -688,15 +691,14 @@ fdt_node_num_register_blocks(struct fdt* fdt, struct fdt_node* node)
     }
 
     uint32_t address_cells = fdt_node_get_address_cells(fdt, node);
-    uint32_t size_cells = fdt_node_get_address_cells(fdt, node);
+    uint32_t size_cells = fdt_node_get_size_cells(fdt, node);
     uint32_t reg_block_cells = address_cells + size_cells;
 
     if (reg_block_cells == 0) {
         return 0;
     }
 
-    // 4 bytes per cell
-    size_t reg_cell_len = fdt_prop_val_len(reg) >> 2;
+    size_t reg_cell_len = fdt_prop_num_cells(reg);
 
     return reg_cell_len / reg_block_cells;
 }
@@ -713,7 +715,7 @@ fdt_node_get_register_block(
     }
 
     uint32_t address_cells = fdt_node_get_address_cells(fdt, node);
-    uint32_t size_cells = fdt_node_get_address_cells(fdt, node);
+    uint32_t size_cells = fdt_node_get_size_cells(fdt, node);
     uint32_t reg_block_cells = address_cells + size_cells;
 
     void* raw_reg = fdt_prop_val(reg);
@@ -727,21 +729,16 @@ fdt_node_get_register_block(
     }
 
     // Get a pointer to the start of the address in the property
-    uint32_t* address_ptr = ((uint32_t*)raw_reg) + (index * reg_block_cells);
+    void* address_ptr = raw_reg + (index * reg_block_cells);
     // Size cells come after address cells
-    uint32_t* size_ptr = address_ptr + address_cells;
-
-    uint32_t msig_cell; // Most significant cell in 64-bit
-    uint32_t lsig_cell; // Least significant cell in 64-bit
+    void* size_ptr = address_ptr + (address_cells * sizeof(uint32_t));
 
     switch (address_cells) {
         case 1:
-            *address = (void*)(uintptr_t)be32toh(*address_ptr);
+            *address = (void*)(uintptr_t)be32toh(*(uint32_t*)address_ptr);
             break;
         case 2:
-            msig_cell = be32toh(address_ptr[0]);
-            lsig_cell = be32toh(address_ptr[1]);
-            *address = (void*)(((uint64_t)msig_cell << 32) | (uint64_t)lsig_cell);
+            *address = (void*)(uintptr_t)be64toh(*(uint64_t*)address_ptr);
             break;
         default:
             goto err_exit;
@@ -749,12 +746,10 @@ fdt_node_get_register_block(
 
     switch (size_cells) {
         case 1:
-            *size = (size_t)be32toh(*size_ptr);
+            *size = (size_t)(uintptr_t)be32toh(*(uint32_t*)size_ptr);
             break;
         case 2:
-            msig_cell = be32toh(size_ptr[0]);
-            lsig_cell = be32toh(size_ptr[1]);
-            *size = (size_t)(((uint64_t)msig_cell << 32) | (uint64_t)lsig_cell);
+            *size = (size_t)(uintptr_t)be64toh(*(uint64_t*)size_ptr);
             break;
         default:
             goto err_exit;

@@ -1,5 +1,6 @@
 
-#include <kernel/of/fdt_mem.h>
+#include "kernel/of/fdt_mem.h"
+
 #include <stdio.h>
 
 // Helper function which decides how to deal with overlapping reserved regions
@@ -32,33 +33,28 @@ trim_or_split_around_reserved(
             *size_ptr = 0;
             return false;
         }
-        else {
-            // Trim from below
-            *start_ptr = resv_end;
-            *size_ptr = (size_t)(end - resv_end);
-            return false;
-        }
-    }
-    else {
-        // Split into two or trim from above
-        if (resv_end < end) {
-            // Split into two
-            // Region1 = [start,resv_start)
-            // Region2 = [resv_end,end)
-            *size_ptr = (size_t)(resv_start - start);
-            *split_start_ptr = resv_end;
-            *split_size_ptr = (size_t)(end - *split_start_ptr);
-            return true;
-        }
-        else {
-            // Trim from above
-            end = resv_start;
-            *size_ptr = (size_t)(end - start);
-            return false;
-        }
+
+        // Trim from below
+        *start_ptr = resv_end;
+        *size_ptr = (size_t)(end - resv_end);
+        return false;
     }
 
-    // Should be unreachable
+    // Split into two or trim from above
+    if (resv_end < end) {
+        // Split into two
+        // Region1 = [start,resv_start)
+        // Region2 = [resv_end,end)
+        *size_ptr = (size_t)(resv_start - start);
+        *split_start_ptr = resv_end;
+        *split_size_ptr = (size_t)(end - *split_start_ptr);
+        return true;
+    }
+
+    // Trim from above
+    end = resv_start;
+    *size_ptr = (size_t)(end - start);
+    return false;
 }
 
 // Try to free this region (return the number of bytes successfully freed)
@@ -82,15 +78,11 @@ try_boot_free_region(struct fdt* fdt, void* start, size_t size)
             // Entirely before the kernel
             return (size_t)0;
         }
-        else {
-            // Need to trim before
-            size = (size_t)((start + size) - (void*)__kernel_end);
-            start = (void*)__kernel_end;
-        }
+        // Need to trim before
+        size = (size_t)((start + size) - (void*)__kernel_end);
+        start = (void*)__kernel_end;
     }
-    else {
-        // No addresses lower than the end of the kernel (so no overlap)
-    }
+    // No addresses lower than the end of the kernel (so no overlap)
 
     // Handle the reserve entries in the FDT
     struct fdt_reserve_entry* entry = fdt_reserve_entry_begin(fdt);
@@ -105,15 +97,11 @@ try_boot_free_region(struct fdt* fdt, void* start, size_t size)
             return try_boot_free_region(fdt, start, size)
                    + try_boot_free_region(fdt, split_start, split_size);
         }
-        else {
-            if (size == 0) {
-                // We got fully trimmed
-                return (size_t)0;
-            }
-            else {
-                // We're still one contiguous region (continue)
-            }
+        if (size == 0) {
+            // We got fully trimmed
+            return (size_t)0;
         }
+        // We're still one contiguous region (continue)
 
         entry = fdt_next_reserve_entry(fdt, entry);
     }
@@ -129,15 +117,12 @@ try_boot_free_region(struct fdt* fdt, void* start, size_t size)
         return try_boot_free_region(fdt, start, size)
                + try_boot_free_region(fdt, split_start, split_size);
     }
-    else {
-        if (size == 0) {
-            // We got fully trimmed
-            return (size_t)0;
-        }
-        else {
-            // We're still one contiguous region (continue)
-        }
+
+    if (size == 0) {
+        // We got fully trimmed
+        return (size_t)0;
     }
+    // We're still one contiguous region (continue)
 
     // We made it through (possibly shrunk)
     if (boot_free(start, size) != KERR_SUCCESS) {

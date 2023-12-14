@@ -9,7 +9,8 @@ docs/			@egelja
 LICENSE			@egelja
 
 # libc
-libc/			@echavemann
+libc/			@echavemann @egelja
+libstdcxx/		@echavemann @egelja
 
 # Build system
 .github/		@egelja

@@ -1,6 +1,8 @@
 #ifndef __KERNEL_OF_FDT_H__
 #define __KERNEL_OF_FDT_H__
 
+#include "kernel/attribute.h"
+
 #include <stdint.h>
 #include <string.h>
 
@@ -8,7 +10,10 @@
 extern "C" {
 #endif
 
-// Bad debugging system (should integrate into Kconfig or delete entirely later)
+// Device Tree Version 17 Specification
+// https://devicetree-specification.readthedocs.io/en/stable/flattened-format.html#figure-device-tree-structure
+
+// TODO: Bad debugging system (should integrate into Kconfig or delete entirely later)
 #define FDT_DEBUG_DEBUG_NAMELESS_NODES
 //
 
@@ -25,24 +30,24 @@ struct fdt {
     uint32_t boot_cpuid_phys;
     uint32_t size_dt_strings;
     uint32_t size_dt_struct;
-};
+} KERNEL_PACKED KERNEL_ALIGNED(sizeof(void*));
 
 struct fdt_node {
     uint32_t token;
     char unit_name[];
-};
+} KERNEL_PACKED KERNEL_ALIGNED(4);
 
 struct fdt_prop {
     uint32_t token;
     uint32_t len;
     uint32_t name_offset;
     uint8_t val[];
-};
+} KERNEL_PACKED KERNEL_ALIGNED(4);
 
 struct fdt_reserve_entry {
     uint64_t address;
     uint64_t size;
-};
+} KERNEL_PACKED KERNEL_ALIGNED(sizeof(void*));
 
 #define FDT_HEADER_MAGIC 0xd00dfeed
 

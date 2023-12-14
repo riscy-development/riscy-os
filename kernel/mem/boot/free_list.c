@@ -1,6 +1,7 @@
 
+#include "kernel/mem/boot.h"
+
 #include <assert.h>
-#include <kernel/mem/boot.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -11,26 +12,49 @@
  */
 
 // Doubly-linked list of free regions in physical memory
+// INVARIANTS:
+//     These regions must be in order with increasing addresses.
+//     Each struct should be allocated at the start of the region it defines.
+//     (E.g. &boot_free_region = the start address of that region)
 struct boot_free_region {
     struct boot_free_region* next;
     struct boot_free_region* prev;
     size_t size;
 };
 
+// Linked list of free memory regions
+static struct boot_free_region* boot_free_list = NULL;
+
 // Forward declarations
 /*
  * Get the first (lowest address) region in the free list
  */
-struct boot_free_region* boot_free_list_begin(void);
+static struct boot_free_region* boot_free_list_begin(void);
 
 /*
  * Get the next region (next higher address) in the free list (or NULL)
  */
-struct boot_free_region* boot_free_list_next(struct boot_free_region* region);
-//
+static struct boot_free_region* boot_free_list_next(struct boot_free_region* region);
 
-// Linked list of free memory regions
-static struct boot_free_region* boot_free_list = NULL;
+// How unaligned is this allocation if we do it after the region
+static size_t
+alloc_after_unalignment(
+    struct boot_free_region* region, size_t size, unsigned int alignment
+)
+{
+    void* start = (void*)region;
+    void* end = start + region->size;
+    return (size_t)(((uintptr_t)end - size) & ((1ull << alignment) - 1ull));
+}
+
+// How unaligned is this allocation if we do it before the region
+static size_t
+alloc_before_unalignment(struct boot_free_region* region, unsigned int alignment)
+{
+    void* start = (void*)region;
+    return (size_t)(1ull << alignment)
+           - ((uintptr_t)start & ((1ull << alignment) - 1ull));
+}
 
 // How big will the region be if we allocate from the end?
 static ssize_t
@@ -38,9 +62,7 @@ region_size_alloc_after(
     struct boot_free_region* region, size_t size, unsigned int alignment
 )
 {
-    uintptr_t end = (uintptr_t)region + region->size;
-    // Get how far off from being aligned it is
-    size_t unalignment = (end - size) & ((1ull << alignment) - 1ull);
+    size_t unalignment = alloc_after_unalignment(region, size, alignment);
     return ((ssize_t)region->size - (ssize_t)(size + unalignment));
 }
 
@@ -50,21 +72,18 @@ region_size_alloc_before(
     struct boot_free_region* region, size_t size, unsigned int alignment
 )
 {
-    uintptr_t start = (uintptr_t)region;
-    // Get how far off from being aligned it is
-    size_t unalignment = (1ull << alignment) - (start & ((1ull << alignment) - 1ull));
+    size_t unalignment = alloc_before_unalignment(region, alignment);
     return ((ssize_t)region->size - (ssize_t)(size + unalignment));
 }
 
 static void*
 alloc_after(struct boot_free_region* region, size_t size, unsigned int alignment)
 {
-    uintptr_t end = (uintptr_t)region + region->size;
     // Get how far off from being aligned it is
     // TODO: (if unalignment > sizeof(struct boot_free_region)
     //        we should split the region in the free list to waste less memory.
     //        This is especially important for page allocations)
-    size_t unalignment = (end - size) & ((1ull << alignment) - 1ull);
+    size_t unalignment = alloc_after_unalignment(region, size, alignment);
     region->size -= (size + unalignment);
 
     if (region->size < sizeof(struct boot_free_region)) {
@@ -88,9 +107,8 @@ alloc_after(struct boot_free_region* region, size_t size, unsigned int alignment
 static void*
 alloc_before(struct boot_free_region* region, size_t size, unsigned int alignment)
 {
-    uintptr_t start = (uintptr_t)region;
     // Get how far off from being aligned it is
-    size_t unalignment = (1ull << alignment) - (start & ((1ull << alignment) - 1ull));
+    size_t unalignment = alloc_before_unalignment(region, alignment);
     size_t new_size = region->size - (size + unalignment);
 
     if (new_size < sizeof(struct boot_free_region)) {
@@ -141,6 +159,7 @@ boot_alloc(size_t size, unsigned int alignment)
 
     struct boot_free_region* curr = boot_free_list_begin();
     while (curr != NULL) {
+        /* Find which allocation type leaves the region larger */
         ssize_t after = region_size_alloc_after(curr, size, alignment);
         ssize_t before = region_size_alloc_before(curr, size, alignment);
         ssize_t greater = after > before ? after : before;
@@ -148,12 +167,7 @@ boot_alloc(size_t size, unsigned int alignment)
             if (smallest_fit > (size_t)greater) {
                 smallest_fit = (size_t)greater;
                 smallest_fitting = curr;
-                if (before == greater) {
-                    should_alloc_before = true;
-                }
-                else {
-                    should_alloc_before = false;
-                }
+                should_alloc_before = (after != greater);
             }
         }
         curr = boot_free_list_next(curr);
@@ -166,9 +180,7 @@ boot_alloc(size_t size, unsigned int alignment)
     if (should_alloc_before) {
         return alloc_before(smallest_fitting, size, alignment);
     }
-    else {
-        return alloc_after(smallest_fitting, size, alignment);
-    }
+    return alloc_after(smallest_fitting, size, alignment);
 }
 
 kerror_t
@@ -218,10 +230,8 @@ boot_free(void* start, size_t size)
                 curr->size += size;
                 return KERR_SUCCESS;
             }
-            else {
-                // Overlap with after (double free error)
-                return KERR_EXIST;
-            }
+            // Overlap with after (double free error)
+            return KERR_EXIST;
         }
         else if (curr_end < start) {
             fully_before = curr;
@@ -232,15 +242,14 @@ boot_free(void* start, size_t size)
             // then we've found all we need to
             break;
         }
-        else {
-            // It's not fully before or fully after: OVERLAP!
-            return KERR_EXIST;
-        }
+        // It's not fully before or fully after: OVERLAP!
+        return KERR_EXIST;
     }
 
     // fully_before and/or fully_after should now be populated
     if (fully_before == NULL && fully_after == NULL) {
         // This shouldn't happen but let's be safe
+        printk("This shouldn't happen: %s\n" __FILE__);
         return KERR_EXIST;
     }
 
@@ -262,7 +271,7 @@ boot_free_list_begin(void)
 struct boot_free_region*
 boot_free_list_next(struct boot_free_region* region)
 {
-    return (struct boot_free_region*)region->next;
+    return region->next;
 }
 
 kerror_t
