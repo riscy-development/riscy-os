@@ -423,7 +423,7 @@ fdt_node_name(struct fdt_node* node)
 #else
     // If the first character is the terminator, replace it with a debug name
     // NOTE: different nodes can appear to have the same name with this scheme
-    return *(char*)node->unit_name != '\0' ? node->unit_name : "{DEBUG: Nameless Node}";
+    return node->unit_name[0] != '\0' ? node->unit_name : "{DEBUG: Nameless Node}";
 #endif
 }
 

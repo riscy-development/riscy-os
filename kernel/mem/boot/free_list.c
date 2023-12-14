@@ -22,6 +22,10 @@ struct boot_free_region {
     size_t size;
 };
 
+// Linked list of free memory regions
+static struct boot_free_region* boot_free_list = NULL;
+
+
 // Forward declarations
 /*
  * Get the first (lowest address) region in the free list
@@ -32,10 +36,6 @@ static struct boot_free_region* boot_free_list_begin(void);
  * Get the next region (next higher address) in the free list (or NULL)
  */
 static struct boot_free_region* boot_free_list_next(struct boot_free_region* region);
-//
-
-// Linked list of free memory regions
-static struct boot_free_region* boot_free_list = NULL;
 
 // How unaligned is this allocation if we do it after the region
 static size_t
