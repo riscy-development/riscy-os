@@ -24,6 +24,9 @@ set(KERN_CXX_FLAGS "-include ${AUTOCONF_HEADER}")
 set(CMAKE_C_FLAGS "${KERN_C_FLAGS} ${ARCH_KERN_C_FLAGS} ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${KERN_CXX_FLAGS} ${ARCH_KERN_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 
+# Run checks
+include(cmake/checks.cmake)
+
 # ----- Sources -----
 
 # Get list of sources
@@ -51,6 +54,7 @@ add_root_dir("drivers")
 
 # Internal modules
 add_subdirectory("of") # Open Firmware Support
+add_subdirectory("mem") # Memory Framework / Memory Allocators 
 
 # ----- Add target -----
 

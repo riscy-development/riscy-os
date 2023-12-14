@@ -1,3 +1,7 @@
+# Device Tree Files
+*.dtb
+*.dts
+
 # Configuration
 .config*
 

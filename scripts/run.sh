@@ -9,4 +9,5 @@ qemu-system-riscv64 \
     -bios none \
     -kernel "$PWD/../build/riscy-os.elf" \
     -serial mon:stdio \
+    -m 1G \
     "$@"

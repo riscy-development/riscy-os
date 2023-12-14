@@ -1,8 +1,11 @@
 #include "kernel/early_output.h"
+#include "kernel/mem/boot.h"
 #include "kernel/of/fdt.h"
+#include "kernel/of/fdt_mem.h"
 
 #include "drivers/syscon.h"
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,29 +78,16 @@ static void
 fdt_dump(struct fdt* fdt)
 {
     struct fdt_node* node = fdt_node_begin(fdt);
-    int depth = 1;
+
+    int depth = 0;
 
     printk("FDT = (%p) {\n", fdt);
-    while (node != NULL && depth > 0) {
+    while (node != NULL && depth >= 0) {
         for (int i = 0; i < depth; i++) {
             printk("\t");
         }
         printk("%s\n", fdt_node_name(node));
-
-        struct fdt_node* subnode = fdt_node_subnode_begin(fdt, node);
-        if (subnode) {
-            depth += 1;
-            node = subnode;
-            continue;
-        }
-        struct fdt_node* sibling_node = fdt_node_next_subnode(fdt, node);
-        if (sibling_node) {
-            node = sibling_node;
-            continue;
-        }
-
-        node = fdt_next_node(fdt, node);
-        depth -= 1;
+        node = fdt_next_node(fdt, node, &depth);
     }
     printk("}\n");
 }
@@ -119,6 +109,20 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
     fdt_dump(fdt);
 
+    // Initialize the boot memory allocator using the FDT
+    fdt_boot_mem_init(fdt);
+
+    // Testing the boot memory allocator
+
+    // Dump the mem map
+    boot_mem_dump();
+
+    // Allocate a page aligned to 16 bytes
+    void* alloc = boot_alloc(0x1000, 4);
+    printk("alloc = %p\n", alloc);
+
+    boot_mem_dump();
+
     // Set up syscon
     bool syscon_ok = true;
     kerror_t err = syscon_init(fdt);
@@ -126,15 +130,6 @@ kmain(uint64_t hartid, struct fdt* fdt)
     if (err) {
         printk("Error setting up syscon\n");
         syscon_ok = false;
-    }
-
-    // Testing FDT functions
-    struct fdt_node* clint = fdt_find_compatible_node(fdt, NULL, "riscv,clint0");
-    if (clint == NULL) {
-        printk("Could not find the CLINT!\n");
-    }
-    else {
-        printk("Found the CLINT! (%s)\n", fdt_node_name(clint));
     }
 
     // Call global ctors
