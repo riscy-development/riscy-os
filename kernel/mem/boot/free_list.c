@@ -25,7 +25,6 @@ struct boot_free_region {
 // Linked list of free memory regions
 static struct boot_free_region* boot_free_list = NULL;
 
-
 // Forward declarations
 /*
  * Get the first (lowest address) region in the free list
