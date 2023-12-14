@@ -571,7 +571,7 @@ fdt_find_node_by_phandle(struct fdt* fdt, struct fdt_node* start, uint32_t phand
                 // This is an incorrect "phandle" property
                 continue;
             }
-            if (phandle == fdt_prop_get_cell(phandle_prop, 0)) {
+            if (fdt_prop_get_cell(phandle_prop, 0) == phandle) {
                 return node;
             }
         }

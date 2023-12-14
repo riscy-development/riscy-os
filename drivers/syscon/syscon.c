@@ -19,15 +19,15 @@ struct generic_syscon_action {
 static struct generic_syscon_action shutdown_action = {
     .found = false,
     .reg = NULL,
-    .mask = NULL,
-    .value = NULL,
+    .mask = 0,
+    .value = 0,
 };
 
 static struct generic_syscon_action reboot_action = {
     .found = false,
     .reg = NULL,
-    .mask = NULL,
-    .value = NULL,
+    .mask = 0,
+    .value = 0,
 };
 
 static kerror_t
@@ -46,25 +46,25 @@ syscon_init_generic_action(
     // Get the phandle to the syscon this poweroff node is referring to
     struct fdt_prop* regmap = fdt_get_prop_by_name(fdt, node, NULL, "regmap");
     if (regmap == NULL) {
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
 
     size_t regmap_cells = fdt_prop_num_cells(regmap);
     if (regmap_cells != 1) {
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
     uint32_t syscon_phandle = fdt_prop_get_cell(regmap, 0);
 
     // Use the phandle to get the syscon node
     struct fdt_node* syscon = fdt_find_node_by_phandle(fdt, NULL, syscon_phandle);
     if (syscon == NULL) {
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
 
     // Make sure the syscon has at least 1 register block
     size_t syscon_reg_block_count = fdt_node_num_register_blocks(fdt, syscon);
     if (syscon_reg_block_count < 1) {
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
 
     // Get the address and size of the syscon register block
@@ -75,20 +75,25 @@ syscon_init_generic_action(
     if (syscon_size == 0) {
         // Error reading register block (or it's actually just zero sized)
         // (Both would be bad)
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
 
     // Get the offset into the register block of our 32-bit register
     struct fdt_prop* offset_prop = fdt_get_prop_by_name(fdt, node, NULL, "offset");
     if (offset_prop == NULL) {
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
 
     size_t offset_cells = fdt_prop_num_cells(offset_prop);
     if (offset_cells != 1) {
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
     uint32_t offset = fdt_prop_get_cell(offset_prop, 0);
+
+    // Check if the end of the 32-bit register is outside of the syscon register block
+    if (offset + 4 > syscon_size) {
+        return KERR_INVALID;
+    }
 
     // We care about the register at "offset" bytes into the syscon
     action->reg = (uint32_t*)(syscon_address + offset);
@@ -106,7 +111,7 @@ syscon_init_generic_action(
     }
 
     if (!found_mask) {
-        // All one's (effectively no mask)
+        // All ones (no mask)
         action->mask = (uint32_t)(-1);
     }
 
@@ -124,7 +129,7 @@ syscon_init_generic_action(
 
     if (!found_mask && !found_value) {
         // We didn't find either (something is wrong)
-        return KERR_NO_EXIST;
+        return KERR_INVALID;
     }
     else if (!found_value) {
         // We found the mask but didn't find the value
