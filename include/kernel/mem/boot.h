@@ -33,7 +33,7 @@
  * Returns a pointer to the region or NULL if the allocation failed.
  *
  */
-void* boot_alloc(size_t size, unsigned int alignment);
+void* boot_alloc(size_t size, uword_t alignment);
 
 /*
  * Tries to add the memory at physical address "start" of length "size" to the free list

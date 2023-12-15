@@ -82,7 +82,7 @@ fdt_next_token_after_node(struct fdt* fdt, struct fdt_node* node)
     if (node == NULL) {
         return NULL;
     }
-    int depth = 0;
+    word_t depth = 0;
 
     do {
         uint32_t token = be32toh(*token_ptr);
@@ -130,8 +130,8 @@ fdt_size(struct fdt* fdt)
 int
 fdt_max_depth(struct fdt* fdt)
 {
-    int depth = 0;
-    int max_depth = depth;
+    word_t depth = 0;
+    word_t max_depth = depth;
 
     struct fdt_node* node = fdt_node_begin(fdt);
     while (node != NULL) {
@@ -227,10 +227,10 @@ fdt_node_begin(struct fdt* fdt)
 }
 
 struct fdt_node*
-fdt_next_node(struct fdt* fdt, struct fdt_node* node, int* depth)
+fdt_next_node(struct fdt* fdt, struct fdt_node* node, word_t* depth)
 {
     uint32_t* token_ptr = fdt_next_token(fdt, (uint32_t*)node);
-    int depth_increase = 1; // The maximum our depth can go up at once
+    word_t depth_increase = 1; // The maximum our depth can go up at once
     while (token_ptr != NULL) {
         uint32_t token = be32toh(*token_ptr);
         if (token == FDT_END_NODE) {
@@ -363,7 +363,7 @@ fdt_node_get_parents(
     // be painful (Also a big reason we want to unflatten the tree ASAP once we have
     // memory allocation)
 
-    int max_depth = fdt_max_depth(fdt);
+    word_t max_depth = fdt_max_depth(fdt);
     if (max_depth < 0) {
         // Corrupted FDT
         return 0;
@@ -371,7 +371,7 @@ fdt_node_get_parents(
 
     struct fdt_node* curr_branch[max_depth + 1];
 
-    int depth = 0;
+    word_t depth = 0;
     struct fdt_node* curr = fdt_node_begin(fdt);
     while (curr != NULL) {
         if (curr == node) {
@@ -591,7 +591,7 @@ fdt_node_get_inherited_prop(
         return prop;
     }
 
-    int max_depth = fdt_max_depth(fdt);
+    word_t max_depth = fdt_max_depth(fdt);
     if (max_depth < 0) {
         // Corrupted FDT
         return NULL;

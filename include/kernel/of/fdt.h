@@ -82,7 +82,7 @@ size_t fdt_size(struct fdt* fdt);
  * Get the maximum depth of this FDT
  * where a "root" node is at depth 0 and subnodes increase the depth by 1
  */
-int fdt_max_depth(struct fdt* fdt);
+word_t fdt_max_depth(struct fdt* fdt);
 
 /*
  * Get the first FDT reserve_entry (or NULL if there are none)
@@ -129,7 +129,7 @@ struct fdt_node* fdt_node_begin(struct fdt* fdt);
  * Returns the next node in the tree (or NULL) traversing the entire tree regardless of
  * depth
  */
-struct fdt_node* fdt_next_node(struct fdt* fdt, struct fdt_node* node, int* depth);
+struct fdt_node* fdt_next_node(struct fdt* fdt, struct fdt_node* node, word_t* depth);
 
 /*
  * Returns the first property in this node (or NULL if there are none)
