@@ -79,11 +79,11 @@ fdt_dump(struct fdt* fdt)
 {
     struct fdt_node* node = fdt_node_begin(fdt);
 
-    int depth = 0;
+    word_t depth = 0;
 
     printk("FDT = (%p) {\n", fdt);
     while (node != NULL && depth >= 0) {
-        for (int i = 0; i < depth; i++) {
+        for (word_t i = 0; i < depth; i++) {
             printk("\t");
         }
         printk("%s\n", fdt_node_name(node));

@@ -127,7 +127,7 @@ fdt_size(struct fdt* fdt)
     return (size_t)be32toh(fdt->totalsize);
 }
 
-int
+word_t
 fdt_max_depth(struct fdt* fdt)
 {
     word_t depth = 0;
