@@ -22,6 +22,8 @@ enum kerror {
     KERR_FULL,  // Trying to insert/push into a full data structure
     KERR_EMPTY, // Trying to read/pop from an empty data structure
 
+    KERR_INVALID, // Some data is malformed
+
     KERR_BUSY, // Less so an error, but an opportunity to do other work and try again
                // later
 

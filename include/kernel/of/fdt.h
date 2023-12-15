@@ -223,6 +223,14 @@ struct fdt_node*
 fdt_find_node_by_unit_name(struct fdt* fdt, struct fdt_node* start, const char* name);
 
 /*
+ * Find the node referenced by "phandle"
+ * The search will begin on node "start" (exclusive)
+ * or if "start" is NULL, the first node in the FDT (inclusive)
+ */
+struct fdt_node*
+fdt_find_node_by_phandle(struct fdt* fdt, struct fdt_node* start, uint32_t phandle);
+
+/*
  * Returns true if "node" is compatible with "compat", else false
  */
 bool fdt_node_is_compatible(struct fdt* fdt, struct fdt_node* node, const char* compat);

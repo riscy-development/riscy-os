@@ -95,6 +95,8 @@ fdt_dump(struct fdt* fdt)
 void
 kmain(uint64_t hartid, struct fdt* fdt)
 {
+    kerror_t err;
+
     // Register the callback
     register_early_putchar(dead_simple_uart_putchar);
 
@@ -123,13 +125,22 @@ kmain(uint64_t hartid, struct fdt* fdt)
 
     boot_mem_dump();
 
-    // Set up syscon
-    bool syscon_ok = true;
-    kerror_t err = syscon_init(fdt);
+    // Set up syscon reboot
+    bool syscon_reboot_ok = true;
+    err = syscon_reboot_init(fdt);
 
     if (err) {
         printk("Error setting up syscon\n");
-        syscon_ok = false;
+        syscon_reboot_ok = false;
+    }
+
+    // Set up syscon shutdown
+    bool syscon_shutdown_ok = true;
+    err = syscon_shutdown_init(fdt);
+
+    if (err) {
+        printk("Error setting up syscon shutdown\n");
+        syscon_shutdown_ok = false;
     }
 
     // Call global ctors
@@ -145,10 +156,10 @@ kmain(uint64_t hartid, struct fdt* fdt)
         if (*UART == '!')
             abort();
 
-        if (syscon_ok && *UART == '^')
+        if (syscon_reboot_ok && *UART == '^')
             syscon_reboot();
 
-        if (syscon_ok && *UART == '&')
+        if (syscon_shutdown_ok && *UART == '&')
             syscon_shutdown();
 
         char old_uart = *UART;
