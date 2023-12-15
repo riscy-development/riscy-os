@@ -24,8 +24,11 @@ _start:
     ldr x5, =__bss_start
 
 __bss_clear_loop:
-    strb wzr, [x5]
-    add x5, x5, 1
+    // Storing a full 8 byte word at a time,
+    // (Assumes .bss and the following section are 
+    //  both at least 8 byte aligned)
+    str xzr, [x5]
+    add x5, x5, 8
     cmp x5, x6
     b.lt __bss_clear_loop
 
