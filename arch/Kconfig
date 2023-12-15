@@ -15,8 +15,8 @@ choice
 	# config X86_64
 	# 	bool "x86_64"
 
-	# config ARM64
-	# 	bool "ARM64"
+	config ARM64
+	 	bool "ARM64"
 endchoice
 
 
@@ -32,10 +32,10 @@ menu "RISC-V Configuration"
 endmenu
 
 
-# menu "ARM64 Configuration"
-# 	depends on ARM64
-# 	source "arch/arm64/Kconfig"
-# endmenu
+menu "ARM64 Configuration"
+	depends on ARM64
+	source "arch/arm64/Kconfig"
+endmenu
 
 choice
 	prompt "Endianness"

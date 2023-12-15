@@ -1,0 +1,12 @@
+
+choice
+	prompt "Generic Interrupt Controller (GIC) Version"
+	default GICV2
+
+	config GICV2
+		bool "GICv2"
+
+	config GICV3
+		bool "GICv3"
+endchoice
+
