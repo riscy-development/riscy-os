@@ -72,7 +72,8 @@ try_boot_free_region(struct fdt* fdt, void* start, size_t size)
 
     // Check if this is a region before the end of the kernel (protects the kernel and
     // firmware which is before it)
-    extern int __kernel_end[];
+    EXTERN_SYMBOL(__kernel_end);
+
     if (start < (void*)__kernel_end) {
         if ((void*)(start + size) <= (void*)__kernel_end) {
             // Entirely before the kernel
