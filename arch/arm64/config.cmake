@@ -3,8 +3,6 @@
 add_link_options(LINKER:-zmax-page-size=0x1000)
 add_link_options(LINKER:-nostdlib)
 
-set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}")
-
 #
 # Kernelspace
 #
