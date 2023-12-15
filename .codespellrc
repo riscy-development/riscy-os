@@ -2,6 +2,6 @@
 builtin = clear,rare,en-GB_to_en-US,names,informal,code
 check-filenames =
 check-hidden =
-skip = */.git,*/build,*/toolchain,*/kbuild-standalone,*/.gitignore
+skip = */.git,*/build,*/toolchain,*/kbuild-standalone,*/.gitignore,*/docs/riscv/*.pdf
 quiet-level = 2
 ignore-words = .codespellignore
