@@ -2,10 +2,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-#ifdef KERNEL
-#  include <print.h>
-#endif
-
 [[noreturn]] void
 abort()
 {

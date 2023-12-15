@@ -1,5 +1,5 @@
 set(
-  ARCH_RISCV_SOURCES
+  ARCH_ARM64_SOURCES
   # Runtime
   entry.S
   kernel.c
@@ -7,7 +7,7 @@ set(
 
 add_kernel_module(
   CORE # core module
-  NAME "arch_riscv"
-  SOURCES ${ARCH_RISCV_SOURCES}
+  NAME "arch_arm64"
+  SOURCES ${ARCH_ARM64_SOURCES}
   INCLUDE_DIRS ${ARCH_KERN_INCLUDES}
 )

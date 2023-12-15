@@ -53,7 +53,7 @@ fini()
 }
 
 /* UART Setup */
-unsigned char* UART = (unsigned char*)0x10000000; // NOLINT
+unsigned char* UART = (unsigned char*)0x9000000; // NOLINT
 
 void
 dead_simple_uart_putchar(char c)
@@ -93,15 +93,12 @@ fdt_dump(struct fdt* fdt)
 }
 
 void
-kmain(uint64_t hartid, struct fdt* fdt)
+kmain(struct fdt* fdt)
 {
     kerror_t err;
 
     // Register the callback
     register_early_putchar(dead_simple_uart_putchar);
-
-    // Print core ID
-    printk("Running on hart (%c)\n", (char)hartid + '0');
 
     // Check the FDT
     if (fdt_verify(fdt) != FDT_VALID) {

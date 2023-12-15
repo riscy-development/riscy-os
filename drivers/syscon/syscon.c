@@ -3,8 +3,6 @@
 #include "kernel/endian.h"
 #include "kernel/of/fdt.h"
 
-#include "print.h"
-
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>

@@ -41,7 +41,7 @@ kernel: | toolchain $(BUILD_SCRIPT)
 .PHONY: run format cloc spellcheck
 
 run: kernel
-	scripts/run.sh
+	scripts/run-$(CONFIG_ARCH_NAME).sh
 
 format:
 	scripts/format.sh
