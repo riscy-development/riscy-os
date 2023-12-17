@@ -13,12 +13,12 @@
 /* Init and Fini arrays */
 typedef void (*func_ptr)(void);
 
-extern func_ptr __preinit_array_start; // NOLINT
-extern func_ptr __preinit_array_end;   // NOLINT
-extern func_ptr __init_array_start;    // NOLINT
-extern func_ptr __init_array_end;      // NOLINT
-extern func_ptr __fini_array_start;    // NOLINT
-extern func_ptr __fini_array_end;      // NOLINT
+EXTERN_PTR_SYMBOL(__preinit_array_start, func_ptr); // NOLINT
+EXTERN_PTR_SYMBOL(__preinit_array_end, func_ptr);   // NOLINT
+EXTERN_PTR_SYMBOL(__init_array_start, func_ptr);    // NOLINT
+EXTERN_PTR_SYMBOL(__init_array_end, func_ptr);      // NOLINT
+EXTERN_PTR_SYMBOL(__fini_array_start, func_ptr);    // NOLINT
+EXTERN_PTR_SYMBOL(__fini_array_end, func_ptr);      // NOLINT
 
 static void
 process_func_array(func_ptr* start, func_ptr* end)
@@ -30,26 +30,19 @@ process_func_array(func_ptr* start, func_ptr* end)
 static void
 preinit()
 {
-    /* why do we pass as pointers?
-     *
-     * otherwise gcc dereferences...
-     * but the linker gives us the pointer
-     *
-     * its really horrible, but it was the only way that worked
-     */
-    process_func_array(&__preinit_array_start, &__preinit_array_end);
+    process_func_array(__preinit_array_start, __preinit_array_end);
 }
 
 static void
 init()
 {
-    process_func_array(&__init_array_start, &__init_array_end);
+    process_func_array(__init_array_start, __init_array_end);
 }
 
 static void
 fini()
 {
-    process_func_array(&__fini_array_start, &__fini_array_end);
+    process_func_array(__fini_array_start, __fini_array_end);
 }
 
 /* UART Setup */
@@ -79,11 +72,11 @@ fdt_dump(struct fdt* fdt)
 {
     struct fdt_node* node = fdt_node_begin(fdt);
 
-    int depth = 0;
+    word_t depth = 0;
 
     printk("FDT = (%p) {\n", fdt);
     while (node != NULL && depth >= 0) {
-        for (int i = 0; i < depth; i++) {
+        for (word_t i = 0; i < depth; i++) {
             printk("\t");
         }
         printk("%s\n", fdt_node_name(node));

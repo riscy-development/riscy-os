@@ -7,9 +7,9 @@ static putchar_t early_putchar_array[EARLY_OUTPUT_MAX_PUTCHAR] = {0};
 kerror_t
 register_early_putchar(void (*putchar)(char))
 {
-    int index = -1;
+    size_t index = -1;
 
-    for (int i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
+    for (size_t i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
         if (early_putchar_array[i] == NULL) {
             index = i;
         }
@@ -28,7 +28,7 @@ register_early_putchar(void (*putchar)(char))
 kerror_t
 unregister_early_putchar(void (*putchar)(char))
 {
-    for (int i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
+    for (size_t i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
         if (early_putchar_array[i] == putchar) {
             early_putchar_array[i] = NULL;
             return KERR_SUCCESS;
@@ -40,7 +40,7 @@ unregister_early_putchar(void (*putchar)(char))
 void
 early_putchar(char c)
 {
-    for (int i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
+    for (size_t i = 0; i < EARLY_OUTPUT_MAX_PUTCHAR; i++) {
         putchar_t cb = early_putchar_array[i];
         if (cb == NULL)
             continue;

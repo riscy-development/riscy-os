@@ -20,6 +20,14 @@ typedef unsigned long long uint64_t;
 // TODO: handle non-64 bit systems
 typedef uint64_t uintptr_t;
 
+#ifdef KERNEL
+
+/* word types */
+typedef long word_t;
+typedef unsigned long uword_t;
+
+#endif
+
 /* Checks */
 /* NOLINTBEGIN */
 _Static_assert(
