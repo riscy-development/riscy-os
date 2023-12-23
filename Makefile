@@ -29,7 +29,7 @@ cfg: menuconfig
 	scripts/config_to_cmake.py .config .config.cmake
 
 # Build
-$(BUILD_SCRIPT): .config.cmake
+$(BUILD_SCRIPT): toolchain .config.cmake
 	mkdir -p $(BUILD)
 	cd $(BUILD); cmake -G Ninja ..
 
