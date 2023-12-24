@@ -27,6 +27,17 @@ list(
 add_library(riscy-libc STATIC ${LIBC_SOURCES})  # TODO how do we build shared libc?
 add_library(riscy-libk STATIC ${LIBC_SOURCES})
 
+# Set output names
+set_target_properties(
+  riscy-libc PROPERTIES
+  OUTPUT_NAME "c"
+)
+
+set_target_properties(
+  riscy-libk PROPERTIES
+  OUTPUT_NAME "k"
+)
+
 # Set include paths
 target_include_directories(riscy-libc PUBLIC ${LIBC_INCLUDES})
 target_include_directories(riscy-libk PUBLIC ${LIBK_INCLUDES})

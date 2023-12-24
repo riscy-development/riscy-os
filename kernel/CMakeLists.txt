@@ -83,7 +83,7 @@ set_target_properties(
 
 add_dependencies(riscy-os kernel_linker_script)
 
-# Install the executable
+# Install the executable to /boot
 install(
   TARGETS riscy-os
   DESTINATION boot
