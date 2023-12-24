@@ -86,5 +86,5 @@ add_dependencies(riscy-os kernel_linker_script)
 # Install the executable
 install(
   TARGETS riscy-os
-  ARCHIVE DESTINATION bin
+  DESTINATION boot
 )
